@@ -50,7 +50,7 @@
     </visual>
 
     <visual>
-      <origin xyz="-0.044 0.060 0.008" rpy="0 0 2.35619449"/>
+      <origin xyz="-0.055805 -0.050205 -0.024500" rpy="0 0 2.35619449"/>
       <geometry>
         <mesh filename="servo_mg90s.stl" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -58,7 +58,7 @@
     </visual>
 
     <visual>
-      <origin xyz="-0.074 0.000 0.008" rpy="0 0 3.14159265"/>
+      <origin xyz="-0.004421 -0.086274 -0.024500" rpy="0 0 3.14159265"/>
       <geometry>
         <mesh filename="servo_mg90s.stl" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -66,7 +66,7 @@
     </visual>
 
     <visual>
-      <origin xyz="-0.044 -0.060 0.008" rpy="0 0 -2.35619449"/>
+      <origin xyz="0.066205 -0.071805 -0.024500" rpy="0 0 -2.35619449"/>
       <geometry>
         <mesh filename="servo_mg90s.stl" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -74,7 +74,7 @@
     </visual>
 
     <visual>
-      <origin xyz="0.044 0.060 0.008" rpy="0 0 0.78539816"/>
+      <origin xyz="-0.066205 0.071805 -0.024500" rpy="0 0 0.78539816"/>
       <geometry>
         <mesh filename="servo_mg90s.stl" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -82,7 +82,7 @@
     </visual>
 
     <visual>
-      <origin xyz="0.074 0.000 0.008" rpy="0 0 0"/>
+      <origin xyz="0.004421 0.086274 -0.024500" rpy="0 0 0"/>
       <geometry>
         <mesh filename="servo_mg90s.stl" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -90,7 +90,7 @@
     </visual>
 
     <visual>
-      <origin xyz="0.044 -0.060 0.008" rpy="0 0 -0.78539816"/>
+      <origin xyz="0.055805 0.050205 -0.024500" rpy="0 0 -0.78539816"/>
       <geometry>
         <mesh filename="servo_mg90s.stl" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -118,7 +118,7 @@
       <material name="black"/>
     </visual>
     <visual>
-      <origin xyz="0.054 0 0.012" rpy="-1.57079633 0 0"/>
+      <origin xyz="-0.015579 0.032500 0.098274" rpy="1.5707963 0 0"/>
       <geometry>
         <mesh filename="servo_mg90s.stl" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -152,7 +152,7 @@
       <material name="black"/>
     </visual>
     <visual>
-      <origin xyz="0.083 0 0.012" rpy="-1.57079633 0 0"/>
+      <origin xyz="0.013421 0.032500 0.098274" rpy="1.5707963 0 0"/>
       <geometry>
         <mesh filename="servo_mg90s.stl" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -241,7 +241,7 @@
       <material name="black"/>
     </visual>
     <visual>
-      <origin xyz="0.054 0 0.012" rpy="-1.57079633 0 0"/>
+      <origin xyz="-0.015579 0.032500 0.098274" rpy="1.5707963 0 0"/>
       <geometry>
         <mesh filename="servo_mg90s.stl" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -275,7 +275,7 @@
       <material name="black"/>
     </visual>
     <visual>
-      <origin xyz="0.083 0 0.012" rpy="-1.57079633 0 0"/>
+      <origin xyz="0.013421 0.032500 0.098274" rpy="1.5707963 0 0"/>
       <geometry>
         <mesh filename="servo_mg90s.stl" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -364,7 +364,7 @@
       <material name="black"/>
     </visual>
     <visual>
-      <origin xyz="0.054 0 0.012" rpy="-1.57079633 0 0"/>
+      <origin xyz="-0.015579 0.032500 0.098274" rpy="1.5707963 0 0"/>
       <geometry>
         <mesh filename="servo_mg90s.stl" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -398,7 +398,7 @@
       <material name="black"/>
     </visual>
     <visual>
-      <origin xyz="0.083 0 0.012" rpy="-1.57079633 0 0"/>
+      <origin xyz="0.013421 0.032500 0.098274" rpy="1.5707963 0 0"/>
       <geometry>
         <mesh filename="servo_mg90s.stl" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -487,7 +487,7 @@
       <material name="black"/>
     </visual>
     <visual>
-      <origin xyz="0.054 0 0.012" rpy="-1.57079633 0 0"/>
+      <origin xyz="-0.015579 0.032500 0.098274" rpy="1.5707963 0 0"/>
       <geometry>
         <mesh filename="servo_mg90s.stl" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -521,7 +521,7 @@
       <material name="black"/>
     </visual>
     <visual>
-      <origin xyz="0.083 0 0.012" rpy="-1.57079633 0 0"/>
+      <origin xyz="0.013421 0.032500 0.098274" rpy="1.5707963 0 0"/>
       <geometry>
         <mesh filename="servo_mg90s.stl" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -610,7 +610,7 @@
       <material name="black"/>
     </visual>
     <visual>
-      <origin xyz="0.054 0 0.012" rpy="-1.57079633 0 0"/>
+      <origin xyz="-0.015579 0.032500 0.098274" rpy="1.5707963 0 0"/>
       <geometry>
         <mesh filename="servo_mg90s.stl" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -644,7 +644,7 @@
       <material name="black"/>
     </visual>
     <visual>
-      <origin xyz="0.083 0 0.012" rpy="-1.57079633 0 0"/>
+      <origin xyz="0.013421 0.032500 0.098274" rpy="1.5707963 0 0"/>
       <geometry>
         <mesh filename="servo_mg90s.stl" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -733,7 +733,7 @@
       <material name="black"/>
     </visual>
     <visual>
-      <origin xyz="0.054 0 0.012" rpy="-1.57079633 0 0"/>
+      <origin xyz="-0.015579 0.032500 0.098274" rpy="1.5707963 0 0"/>
       <geometry>
         <mesh filename="servo_mg90s.stl" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -767,7 +767,7 @@
       <material name="black"/>
     </visual>
     <visual>
-      <origin xyz="0.083 0 0.012" rpy="-1.57079633 0 0"/>
+      <origin xyz="0.013421 0.032500 0.098274" rpy="1.5707963 0 0"/>
       <geometry>
         <mesh filename="servo_mg90s.stl" scale="0.001 0.001 0.001"/>
       </geometry>
