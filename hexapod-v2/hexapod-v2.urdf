@@ -68,7 +68,30 @@
       </collision>
   </link>
 
-  <!-- ─── Leg L1 ──────────────────────────────────────── -->
+  <link name="l1_hip_servo">
+      <inertial>
+        <mass value="0.055"/>
+        <inertia ixx="0.00002204" ixy="0" ixz="0"
+                 iyy="0.00001502" iyz="0"
+                 izz="0.00001033"/>
+      </inertial>
+      <visual>
+        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+  </link>
+
   <link name="l1_coxa">
       <inertial>
         <mass value="0.04"/>
@@ -91,8 +114,17 @@
           <mesh filename="./coxa-996-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
+  </link>
+
+  <link name="l1_shoulder_servo">
+      <inertial>
+        <mass value="0.055"/>
+        <inertia ixx="0.00002204" ixy="0" ixz="0"
+                 iyy="0.00001502" iyz="0"
+                 izz="0.00001033"/>
+      </inertial>
       <visual>
-        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -101,7 +133,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -130,8 +162,17 @@
           <mesh filename="./femur-996-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
+  </link>
+
+  <link name="l1_knee_servo">
+      <inertial>
+        <mass value="0.055"/>
+        <inertia ixx="0.00002204" ixy="0" ixz="0"
+                 iyy="0.00001502" iyz="0"
+                 izz="0.00001033"/>
+      </inertial>
       <visual>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -140,7 +181,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -169,21 +210,6 @@
           <mesh filename="./tibia-996-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
-      <visual>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
-        <geometry>
-          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
-        </geometry>
-        <material name="grey">
-          <color rgba="0.7 0.7 0.7 1"/>
-        </material>
-      </visual>
-      <collision>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
-        <geometry>
-          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
-        </geometry>
-      </collision>
   </link>
 
   <link name="l1_tip">
@@ -200,6 +226,12 @@
       </collision>
   </link>
 
+  <joint name="l1_hip_servo_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="l1_hip_servo"/>
+    <origin xyz="-0.063000 0.083500 0.000000" rpy="0.000000 0.000000 2.217165"/>
+  </joint>
+
   <joint name="l1_hip" type="revolute">
     <parent link="base_link"/>
     <child  link="l1_coxa"/>
@@ -209,6 +241,12 @@
     <dynamics damping="0.01" friction="0.05"/>
   </joint>
 
+  <joint name="l1_shoulder_servo_joint" type="fixed">
+    <parent link="l1_coxa"/>
+    <child  link="l1_shoulder_servo"/>
+    <origin xyz="0.043000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
+  </joint>
+
   <joint name="l1_shoulder" type="revolute">
     <parent link="l1_coxa"/>
     <child  link="l1_femur"/>
@@ -216,6 +254,12 @@
     <axis xyz="0 1 0"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
+  </joint>
+
+  <joint name="l1_knee_servo_joint" type="fixed">
+    <parent link="l1_femur"/>
+    <child  link="l1_knee_servo"/>
+    <origin xyz="0.080000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <joint name="l1_knee" type="revolute">
@@ -233,7 +277,30 @@
     <origin xyz="0.100076 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
-  <!-- ─── Leg L2 ──────────────────────────────────────── -->
+  <link name="l2_hip_servo">
+      <inertial>
+        <mass value="0.055"/>
+        <inertia ixx="0.00002204" ixy="0" ixz="0"
+                 iyy="0.00001502" iyz="0"
+                 izz="0.00001033"/>
+      </inertial>
+      <visual>
+        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+  </link>
+
   <link name="l2_coxa">
       <inertial>
         <mass value="0.04"/>
@@ -256,8 +323,17 @@
           <mesh filename="./coxa-996-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
+  </link>
+
+  <link name="l2_shoulder_servo">
+      <inertial>
+        <mass value="0.055"/>
+        <inertia ixx="0.00002204" ixy="0" ixz="0"
+                 iyy="0.00001502" iyz="0"
+                 izz="0.00001033"/>
+      </inertial>
       <visual>
-        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -266,7 +342,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -295,8 +371,17 @@
           <mesh filename="./femur-996-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
+  </link>
+
+  <link name="l2_knee_servo">
+      <inertial>
+        <mass value="0.055"/>
+        <inertia ixx="0.00002204" ixy="0" ixz="0"
+                 iyy="0.00001502" iyz="0"
+                 izz="0.00001033"/>
+      </inertial>
       <visual>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -305,7 +390,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -334,21 +419,6 @@
           <mesh filename="./tibia-996-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
-      <visual>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
-        <geometry>
-          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
-        </geometry>
-        <material name="grey">
-          <color rgba="0.7 0.7 0.7 1"/>
-        </material>
-      </visual>
-      <collision>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
-        <geometry>
-          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
-        </geometry>
-      </collision>
   </link>
 
   <link name="l2_tip">
@@ -365,6 +435,12 @@
       </collision>
   </link>
 
+  <joint name="l2_hip_servo_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="l2_hip_servo"/>
+    <origin xyz="-0.081500 0.000000 0.000000" rpy="0.000000 0.000000 3.141593"/>
+  </joint>
+
   <joint name="l2_hip" type="revolute">
     <parent link="base_link"/>
     <child  link="l2_coxa"/>
@@ -374,6 +450,12 @@
     <dynamics damping="0.01" friction="0.05"/>
   </joint>
 
+  <joint name="l2_shoulder_servo_joint" type="fixed">
+    <parent link="l2_coxa"/>
+    <child  link="l2_shoulder_servo"/>
+    <origin xyz="0.043000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
+  </joint>
+
   <joint name="l2_shoulder" type="revolute">
     <parent link="l2_coxa"/>
     <child  link="l2_femur"/>
@@ -381,6 +463,12 @@
     <axis xyz="0 1 0"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
+  </joint>
+
+  <joint name="l2_knee_servo_joint" type="fixed">
+    <parent link="l2_femur"/>
+    <child  link="l2_knee_servo"/>
+    <origin xyz="0.080000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <joint name="l2_knee" type="revolute">
@@ -398,7 +486,30 @@
     <origin xyz="0.100076 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
-  <!-- ─── Leg L3 ──────────────────────────────────────── -->
+  <link name="l3_hip_servo">
+      <inertial>
+        <mass value="0.055"/>
+        <inertia ixx="0.00002204" ixy="0" ixz="0"
+                 iyy="0.00001502" iyz="0"
+                 izz="0.00001033"/>
+      </inertial>
+      <visual>
+        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+  </link>
+
   <link name="l3_coxa">
       <inertial>
         <mass value="0.04"/>
@@ -421,8 +532,17 @@
           <mesh filename="./coxa-996-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
+  </link>
+
+  <link name="l3_shoulder_servo">
+      <inertial>
+        <mass value="0.055"/>
+        <inertia ixx="0.00002204" ixy="0" ixz="0"
+                 iyy="0.00001502" iyz="0"
+                 izz="0.00001033"/>
+      </inertial>
       <visual>
-        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -431,7 +551,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -460,8 +580,17 @@
           <mesh filename="./femur-996-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
+  </link>
+
+  <link name="l3_knee_servo">
+      <inertial>
+        <mass value="0.055"/>
+        <inertia ixx="0.00002204" ixy="0" ixz="0"
+                 iyy="0.00001502" iyz="0"
+                 izz="0.00001033"/>
+      </inertial>
       <visual>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -470,7 +599,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -499,21 +628,6 @@
           <mesh filename="./tibia-996-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
-      <visual>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
-        <geometry>
-          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
-        </geometry>
-        <material name="grey">
-          <color rgba="0.7 0.7 0.7 1"/>
-        </material>
-      </visual>
-      <collision>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
-        <geometry>
-          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
-        </geometry>
-      </collision>
   </link>
 
   <link name="l3_tip">
@@ -530,6 +644,12 @@
       </collision>
   </link>
 
+  <joint name="l3_hip_servo_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="l3_hip_servo"/>
+    <origin xyz="-0.063000 -0.083500 0.000000" rpy="0.000000 0.000000 -2.217165"/>
+  </joint>
+
   <joint name="l3_hip" type="revolute">
     <parent link="base_link"/>
     <child  link="l3_coxa"/>
@@ -539,6 +659,12 @@
     <dynamics damping="0.01" friction="0.05"/>
   </joint>
 
+  <joint name="l3_shoulder_servo_joint" type="fixed">
+    <parent link="l3_coxa"/>
+    <child  link="l3_shoulder_servo"/>
+    <origin xyz="0.043000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
+  </joint>
+
   <joint name="l3_shoulder" type="revolute">
     <parent link="l3_coxa"/>
     <child  link="l3_femur"/>
@@ -546,6 +672,12 @@
     <axis xyz="0 1 0"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
+  </joint>
+
+  <joint name="l3_knee_servo_joint" type="fixed">
+    <parent link="l3_femur"/>
+    <child  link="l3_knee_servo"/>
+    <origin xyz="0.080000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <joint name="l3_knee" type="revolute">
@@ -563,7 +695,30 @@
     <origin xyz="0.100076 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
-  <!-- ─── Leg R1 ──────────────────────────────────────── -->
+  <link name="r1_hip_servo">
+      <inertial>
+        <mass value="0.055"/>
+        <inertia ixx="0.00002204" ixy="0" ixz="0"
+                 iyy="0.00001502" iyz="0"
+                 izz="0.00001033"/>
+      </inertial>
+      <visual>
+        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+  </link>
+
   <link name="r1_coxa">
       <inertial>
         <mass value="0.04"/>
@@ -586,8 +741,17 @@
           <mesh filename="./coxa-996-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
+  </link>
+
+  <link name="r1_shoulder_servo">
+      <inertial>
+        <mass value="0.055"/>
+        <inertia ixx="0.00002204" ixy="0" ixz="0"
+                 iyy="0.00001502" iyz="0"
+                 izz="0.00001033"/>
+      </inertial>
       <visual>
-        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -596,7 +760,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -625,8 +789,17 @@
           <mesh filename="./femur-996-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
+  </link>
+
+  <link name="r1_knee_servo">
+      <inertial>
+        <mass value="0.055"/>
+        <inertia ixx="0.00002204" ixy="0" ixz="0"
+                 iyy="0.00001502" iyz="0"
+                 izz="0.00001033"/>
+      </inertial>
       <visual>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -635,7 +808,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -664,21 +837,6 @@
           <mesh filename="./tibia-996-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
-      <visual>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
-        <geometry>
-          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
-        </geometry>
-        <material name="grey">
-          <color rgba="0.7 0.7 0.7 1"/>
-        </material>
-      </visual>
-      <collision>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
-        <geometry>
-          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
-        </geometry>
-      </collision>
   </link>
 
   <link name="r1_tip">
@@ -695,6 +853,12 @@
       </collision>
   </link>
 
+  <joint name="r1_hip_servo_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="r1_hip_servo"/>
+    <origin xyz="0.063000 0.083500 0.000000" rpy="0.000000 0.000000 0.924427"/>
+  </joint>
+
   <joint name="r1_hip" type="revolute">
     <parent link="base_link"/>
     <child  link="r1_coxa"/>
@@ -704,6 +868,12 @@
     <dynamics damping="0.01" friction="0.05"/>
   </joint>
 
+  <joint name="r1_shoulder_servo_joint" type="fixed">
+    <parent link="r1_coxa"/>
+    <child  link="r1_shoulder_servo"/>
+    <origin xyz="0.043000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
+  </joint>
+
   <joint name="r1_shoulder" type="revolute">
     <parent link="r1_coxa"/>
     <child  link="r1_femur"/>
@@ -711,6 +881,12 @@
     <axis xyz="0 1 0"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
+  </joint>
+
+  <joint name="r1_knee_servo_joint" type="fixed">
+    <parent link="r1_femur"/>
+    <child  link="r1_knee_servo"/>
+    <origin xyz="0.080000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <joint name="r1_knee" type="revolute">
@@ -728,7 +904,30 @@
     <origin xyz="0.100076 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
-  <!-- ─── Leg R2 ──────────────────────────────────────── -->
+  <link name="r2_hip_servo">
+      <inertial>
+        <mass value="0.055"/>
+        <inertia ixx="0.00002204" ixy="0" ixz="0"
+                 iyy="0.00001502" iyz="0"
+                 izz="0.00001033"/>
+      </inertial>
+      <visual>
+        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+  </link>
+
   <link name="r2_coxa">
       <inertial>
         <mass value="0.04"/>
@@ -751,8 +950,17 @@
           <mesh filename="./coxa-996-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
+  </link>
+
+  <link name="r2_shoulder_servo">
+      <inertial>
+        <mass value="0.055"/>
+        <inertia ixx="0.00002204" ixy="0" ixz="0"
+                 iyy="0.00001502" iyz="0"
+                 izz="0.00001033"/>
+      </inertial>
       <visual>
-        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -761,7 +969,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -790,8 +998,17 @@
           <mesh filename="./femur-996-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
+  </link>
+
+  <link name="r2_knee_servo">
+      <inertial>
+        <mass value="0.055"/>
+        <inertia ixx="0.00002204" ixy="0" ixz="0"
+                 iyy="0.00001502" iyz="0"
+                 izz="0.00001033"/>
+      </inertial>
       <visual>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -800,7 +1017,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -829,21 +1046,6 @@
           <mesh filename="./tibia-996-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
-      <visual>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
-        <geometry>
-          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
-        </geometry>
-        <material name="grey">
-          <color rgba="0.7 0.7 0.7 1"/>
-        </material>
-      </visual>
-      <collision>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
-        <geometry>
-          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
-        </geometry>
-      </collision>
   </link>
 
   <link name="r2_tip">
@@ -860,6 +1062,12 @@
       </collision>
   </link>
 
+  <joint name="r2_hip_servo_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="r2_hip_servo"/>
+    <origin xyz="0.081500 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
+  </joint>
+
   <joint name="r2_hip" type="revolute">
     <parent link="base_link"/>
     <child  link="r2_coxa"/>
@@ -869,6 +1077,12 @@
     <dynamics damping="0.01" friction="0.05"/>
   </joint>
 
+  <joint name="r2_shoulder_servo_joint" type="fixed">
+    <parent link="r2_coxa"/>
+    <child  link="r2_shoulder_servo"/>
+    <origin xyz="0.043000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
+  </joint>
+
   <joint name="r2_shoulder" type="revolute">
     <parent link="r2_coxa"/>
     <child  link="r2_femur"/>
@@ -876,6 +1090,12 @@
     <axis xyz="0 1 0"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
+  </joint>
+
+  <joint name="r2_knee_servo_joint" type="fixed">
+    <parent link="r2_femur"/>
+    <child  link="r2_knee_servo"/>
+    <origin xyz="0.080000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <joint name="r2_knee" type="revolute">
@@ -893,7 +1113,30 @@
     <origin xyz="0.100076 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
-  <!-- ─── Leg R3 ──────────────────────────────────────── -->
+  <link name="r3_hip_servo">
+      <inertial>
+        <mass value="0.055"/>
+        <inertia ixx="0.00002204" ixy="0" ixz="0"
+                 iyy="0.00001502" iyz="0"
+                 izz="0.00001033"/>
+      </inertial>
+      <visual>
+        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+  </link>
+
   <link name="r3_coxa">
       <inertial>
         <mass value="0.04"/>
@@ -916,8 +1159,17 @@
           <mesh filename="./coxa-996-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
+  </link>
+
+  <link name="r3_shoulder_servo">
+      <inertial>
+        <mass value="0.055"/>
+        <inertia ixx="0.00002204" ixy="0" ixz="0"
+                 iyy="0.00001502" iyz="0"
+                 izz="0.00001033"/>
+      </inertial>
       <visual>
-        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -926,7 +1178,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -955,8 +1207,17 @@
           <mesh filename="./femur-996-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
+  </link>
+
+  <link name="r3_knee_servo">
+      <inertial>
+        <mass value="0.055"/>
+        <inertia ixx="0.00002204" ixy="0" ixz="0"
+                 iyy="0.00001502" iyz="0"
+                 izz="0.00001033"/>
+      </inertial>
       <visual>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -965,7 +1226,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -994,21 +1255,6 @@
           <mesh filename="./tibia-996-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
-      <visual>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
-        <geometry>
-          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
-        </geometry>
-        <material name="grey">
-          <color rgba="0.7 0.7 0.7 1"/>
-        </material>
-      </visual>
-      <collision>
-        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
-        <geometry>
-          <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
-        </geometry>
-      </collision>
   </link>
 
   <link name="r3_tip">
@@ -1025,6 +1271,12 @@
       </collision>
   </link>
 
+  <joint name="r3_hip_servo_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="r3_hip_servo"/>
+    <origin xyz="0.063000 -0.083500 0.000000" rpy="0.000000 0.000000 -0.924427"/>
+  </joint>
+
   <joint name="r3_hip" type="revolute">
     <parent link="base_link"/>
     <child  link="r3_coxa"/>
@@ -1034,6 +1286,12 @@
     <dynamics damping="0.01" friction="0.05"/>
   </joint>
 
+  <joint name="r3_shoulder_servo_joint" type="fixed">
+    <parent link="r3_coxa"/>
+    <child  link="r3_shoulder_servo"/>
+    <origin xyz="0.043000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
+  </joint>
+
   <joint name="r3_shoulder" type="revolute">
     <parent link="r3_coxa"/>
     <child  link="r3_femur"/>
@@ -1041,6 +1299,12 @@
     <axis xyz="0 1 0"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
+  </joint>
+
+  <joint name="r3_knee_servo_joint" type="fixed">
+    <parent link="r3_femur"/>
+    <child  link="r3_knee_servo"/>
+    <origin xyz="0.080000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <joint name="r3_knee" type="revolute">

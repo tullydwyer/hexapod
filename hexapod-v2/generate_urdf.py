@@ -235,24 +235,23 @@ def estimate_tip_mesh_offset():
 
 
 # ── servo mesh placement ─────────────────────────────────────────────────────
-# servo-MG996R.stl bbox: min=[0,0,0] max=[19,43.5,54.5] mm
-# Output shaft is at top of body, centered in X and Y.
-# Approximate shaft-base centre: (9.5, 21.75, 38.0) mm
-_S_X = 0.0095   # shaft centre X in STL space
-_S_Y = 0.02175  # shaft centre Y in STL space
-_S_Z = 0.038    # shaft-base height Z in STL space
+# servo-MG996R.stl  size 19 × 43.5 × 54.5 mm
+# Shaft axis centre (from mesh analysis): XY = (9.36, 23.21) mm
+# Shaft exits case top at Z ≈ 38 mm — that is the joint pivot reference point.
+_SX = 0.00936   # shaft centre X
+_SY = 0.02321   # shaft centre Y
+_SZ = 0.038     # shaft exit from case top (Z pivot)
 
-# Hip joint rotates around Z.  Shaft already points along Z in the STL.
-# xyz shifts the STL so the shaft centre sits at link origin (0,0,0).
-SERVO_HIP_XYZ = f"{-_S_X:.6f} {-_S_Y:.6f} {-_S_Z:.6f}"
-SERVO_HIP_RPY = "0 0 0"
+# Hip servo: shaft along +Z.  Move mesh so shaft exit sits at (0,0,0).
+HIP_SERVO_XYZ = f"{-_SX:.6f} {-_SY:.6f} {-_SZ:.6f}"
+HIP_SERVO_RPY = "0 0 0"
 
-# Shoulder / knee joints rotate around Y.
-# Rotate the servo Rx(-π/2): STL-Z → link-Y, STL-Y → link-(-Z).
-# After Rx(-π/2) the shaft STL point (Sx, Sy, Sz) maps to (Sx, Sz, -Sy).
-# xyz = -(Sx, Sz, -Sy) to bring the shaft to link origin.
-SERVO_LIMB_XYZ = f"{-_S_X:.6f} {-_S_Z:.6f} {_S_Y:.6f}"
-SERVO_LIMB_RPY = "-1.5708 0 0"
+# Shoulder / knee servos: rotate Rx(-π/2) so STL-Z → link+Y.
+# After that rotation STL(x,y,z) → link(x, z, -y).
+# STL shaft exit (SX, SY, SZ) → link (SX, SZ, -SY).
+# xyz offset to bring that point to (0,0,0):
+LIMB_SERVO_XYZ = f"{-_SX:.6f} {-_SZ:.6f} {_SY:.6f}"
+LIMB_SERVO_RPY = "-1.5708 0 0"
 
 
 # ── inertial placeholders ─────────────────────────────────────────────────────
@@ -324,34 +323,56 @@ def generate_urdf():
         femur_stl = f"femur-996-{side}.stl"
         tibia_stl = f"tibia-996-{side}.stl"
 
-        lines.append(f'  <!-- ─── Leg {leg_name.upper()} ──────────────────────────────────────── -->')
+        # ── hip servo link (fixed to base_link) ──
+        lines += [
+            f'  <link name="{leg_name}_hip_servo">',
+            inertial_box(0.055, 0.019, 0.0435, 0.054),
+            mesh_tag("servo-MG996R.stl", xyz=HIP_SERVO_XYZ, rpy=HIP_SERVO_RPY),
+            '  </link>',
+            '',
+        ]
 
-        # ── coxa link  (includes the hip servo visual) ──
+        # ── coxa link (rotates around hip servo shaft) ──
         lines += [
             f'  <link name="{leg_name}_coxa">',
             inertial_box(0.040, COXA_LEN, 0.030, 0.025),
             mesh_tag(coxa_stl, xyz=coxa_xyz, rpy=coxa_rpy),
-            mesh_tag("servo-MG996R.stl", xyz=SERVO_HIP_XYZ, rpy=SERVO_HIP_RPY),
             '  </link>',
             '',
         ]
 
-        # ── femur link  (includes the shoulder servo visual at link origin) ──
+        # ── shoulder servo link (fixed to coxa) ──
+        lines += [
+            f'  <link name="{leg_name}_shoulder_servo">',
+            inertial_box(0.055, 0.019, 0.0435, 0.054),
+            mesh_tag("servo-MG996R.stl", xyz=LIMB_SERVO_XYZ, rpy=LIMB_SERVO_RPY),
+            '  </link>',
+            '',
+        ]
+
+        # ── femur link (rotates around shoulder servo shaft) ──
         lines += [
             f'  <link name="{leg_name}_femur">',
             inertial_box(0.060, FEMUR_LEN, 0.020, 0.025),
             mesh_tag(femur_stl, xyz=femur_xyz, rpy=femur_rpy),
-            mesh_tag("servo-MG996R.stl", xyz=SERVO_LIMB_XYZ, rpy=SERVO_LIMB_RPY),
             '  </link>',
             '',
         ]
 
-        # ── tibia link  (includes the knee servo visual at link origin) ──
+        # ── knee servo link (fixed to femur) ──
+        lines += [
+            f'  <link name="{leg_name}_knee_servo">',
+            inertial_box(0.055, 0.019, 0.0435, 0.054),
+            mesh_tag("servo-MG996R.stl", xyz=LIMB_SERVO_XYZ, rpy=LIMB_SERVO_RPY),
+            '  </link>',
+            '',
+        ]
+
+        # ── tibia link (rotates around knee servo shaft) ──
         lines += [
             f'  <link name="{leg_name}_tibia">',
             inertial_box(0.040, tibia_stl_len, 0.015, 0.015),
             mesh_tag(tibia_stl, xyz=tibia_xyz, rpy=tibia_rpy),
-            mesh_tag("servo-MG996R.stl", xyz=SERVO_LIMB_XYZ, rpy=SERVO_LIMB_RPY),
             '  </link>',
             '',
         ]
@@ -374,8 +395,17 @@ def generate_urdf():
             '',
         ]
 
-        # ── joint: base → coxa (hip yaw, Z axis) ──
-        #   Joint origin is at the mount point on the body; yaw aligns coxa outward.
+        # ── joint: base → hip_servo (fixed — servo body stays with frame) ──
+        lines += [
+            f'  <joint name="{leg_name}_hip_servo_joint" type="fixed">',
+            f'    <parent link="base_link"/>',
+            f'    <child  link="{leg_name}_hip_servo"/>',
+            f'    <origin xyz="{fmt_xyz((mx, my, mz))}" rpy="{fmt_rpy(0, 0, yaw_rad)}"/>',
+            f'  </joint>',
+            '',
+        ]
+
+        # ── joint: base → coxa (revolute, coxa rotates AROUND the hip servo shaft) ──
         lines += [
             f'  <joint name="{leg_name}_hip" type="revolute">',
             f'    <parent link="base_link"/>',
@@ -388,8 +418,17 @@ def generate_urdf():
             '',
         ]
 
-        # ── joint: coxa → femur (shoulder pitch, Y axis) ──
-        #   Joint origin is at the far end of the coxa link (+X in coxa frame).
+        # ── joint: coxa → shoulder_servo (fixed — servo body moves with coxa) ──
+        lines += [
+            f'  <joint name="{leg_name}_shoulder_servo_joint" type="fixed">',
+            f'    <parent link="{leg_name}_coxa"/>',
+            f'    <child  link="{leg_name}_shoulder_servo"/>',
+            f'    <origin xyz="{fmt_xyz((COXA_LEN, 0.0, 0.0))}" rpy="{fmt_rpy(0, 0, 0)}"/>',
+            f'  </joint>',
+            '',
+        ]
+
+        # ── joint: coxa → femur (revolute, femur rotates AROUND the shoulder servo shaft) ──
         lines += [
             f'  <joint name="{leg_name}_shoulder" type="revolute">',
             f'    <parent link="{leg_name}_coxa"/>',
@@ -402,8 +441,17 @@ def generate_urdf():
             '',
         ]
 
-        # ── joint: femur → tibia (knee pitch, Y axis) ──
-        #   Joint origin is at the far end of the femur (+X in femur frame).
+        # ── joint: femur → knee_servo (fixed — servo body moves with femur) ──
+        lines += [
+            f'  <joint name="{leg_name}_knee_servo_joint" type="fixed">',
+            f'    <parent link="{leg_name}_femur"/>',
+            f'    <child  link="{leg_name}_knee_servo"/>',
+            f'    <origin xyz="{fmt_xyz((FEMUR_LEN, 0.0, 0.0))}" rpy="{fmt_rpy(0, 0, 0)}"/>',
+            f'  </joint>',
+            '',
+        ]
+
+        # ── joint: femur → tibia (revolute, tibia rotates AROUND the knee servo shaft) ──
         lines += [
             f'  <joint name="{leg_name}_knee" type="revolute">',
             f'    <parent link="{leg_name}_femur"/>',
