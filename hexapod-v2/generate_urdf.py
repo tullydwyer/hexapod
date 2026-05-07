@@ -1,271 +1,229 @@
 """
-Hexapod-v2 URDF Generator
-Analyzes STL meshes to determine bounding boxes / pivot offsets, then writes hexapod-v2.urdf.
+Hexapod-v2 URDF generator.
 
-Coordinate convention (ROS/URDF standard, matching CAD frame notes):
+This version treats the STEP files as the source of truth for printed parts.
+Those CAD files already carry useful pivot origins, so the generated STL meshes
+preserve those coordinates instead of re-origining parts to their bounding-box
+minimums.  The only baked transforms are:
+
+* body pieces are centred around base_link for easier inspection;
+* mirrored left/right variants are generated where the CAD set only has one;
+* servo visuals are pre-rotated so each servo shaft sits exactly on its joint.
+
+Coordinate convention:
   x = robot right
   y = robot forward
   z = up
-
-Physical parameters sourced from chica-config-2040.txt:
-  COXA_LEN  =  43 mm
-  FEMUR_LEN =  80 mm
-  TIBIA_LEN = 134 mm
-  L1_TO_R1  = 126 mm  → lateral offset of front/rear mounts = ±63 mm
-  L2_TO_R2  = 163 mm  → lateral offset of middle mounts   = ±81.5 mm
-  L1_TO_L3  = 167 mm  → longitudinal offset of front/rear  = ±83.5 mm
 """
 
+from __future__ import annotations
+
 import math
-import os
-import trimesh
+import shutil
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
 import numpy as np
+import trimesh
 
-# ── physical constants (metres) ──────────────────────────────────────────────
-COXA_LEN   = 0.043
-FEMUR_LEN  = 0.080
-TIBIA_LEN  = 0.134
 
-# Body frame half-dimensions
-BODY_FRONT_Y  =  0.0835   # front/rear mount offset along Y
-BODY_CORNER_X =  0.063    # front/rear mount offset along X (abs)
-BODY_MID_X    =  0.0815   # middle mount offset along X (abs)
-BODY_Z        =  0.0      # coxa joints are at body mid-plane z=0
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parent
+STEP_DIR = ROOT / "STEP"
+MESH_DIR = HERE / "meshes"
 
-# Leg definitions  (name, mount_xyz, side, angle_deg_from_+X_axis)
-# angle_from_X: angle in the XY plane from the +X axis to the outward direction
+
+# Physical dimensions from chica-config-2040.txt.
+COXA_LEN = 0.043
+FEMUR_LEN = 0.080
+TIBIA_LEN = 0.134
+
+
+# Body mount locations from chica-config-2040.txt.
+BODY_FRONT_Y = 0.0835
+BODY_CORNER_X = 0.063
+BODY_MID_X = 0.0815
+BODY_Z = -0.010
+
+
+# name, mount xyz, side, yaw angle from +X toward the outward leg direction
 LEGS = [
-    ("l1", (-BODY_CORNER_X,  BODY_FRONT_Y,  BODY_Z), "left",   math.degrees(math.atan2( BODY_FRONT_Y, -BODY_CORNER_X))),
-    ("l2", (-BODY_MID_X,     0.0,           BODY_Z), "left",   180.0),
-    ("l3", (-BODY_CORNER_X, -BODY_FRONT_Y,  BODY_Z), "left",   math.degrees(math.atan2(-BODY_FRONT_Y, -BODY_CORNER_X))),
-    ("r1", ( BODY_CORNER_X,  BODY_FRONT_Y,  BODY_Z), "right",  math.degrees(math.atan2( BODY_FRONT_Y,  BODY_CORNER_X))),
-    ("r2", ( BODY_MID_X,     0.0,           BODY_Z), "right",  0.0),
-    ("r3", ( BODY_CORNER_X, -BODY_FRONT_Y,  BODY_Z), "right",  math.degrees(math.atan2(-BODY_FRONT_Y,  BODY_CORNER_X))),
+    ("l1", (-BODY_CORNER_X, BODY_FRONT_Y, BODY_Z), "left", math.atan2(BODY_FRONT_Y, -BODY_CORNER_X)),
+    ("l2", (-BODY_MID_X, 0.0, BODY_Z), "left", math.pi),
+    ("l3", (-BODY_CORNER_X, -BODY_FRONT_Y, BODY_Z), "left", math.atan2(-BODY_FRONT_Y, -BODY_CORNER_X)),
+    ("r1", (BODY_CORNER_X, BODY_FRONT_Y, BODY_Z), "right", math.atan2(BODY_FRONT_Y, BODY_CORNER_X)),
+    ("r2", (BODY_MID_X, 0.0, BODY_Z), "right", 0.0),
+    ("r3", (BODY_CORNER_X, -BODY_FRONT_Y, BODY_Z), "right", math.atan2(-BODY_FRONT_Y, BODY_CORNER_X)),
 ]
 
-HERE = os.path.dirname(os.path.abspath(__file__))
+
+# Servo shaft location in hexapod-v2/servo-MG996R.stl, millimetres.
+SERVO_SHAFT = np.array([10.08, -3.18, 39.0])
 
 
-# ── mesh analysis helpers ─────────────────────────────────────────────────────
+def rot_x(angle: float) -> np.ndarray:
+    c = math.cos(angle)
+    s = math.sin(angle)
+    return np.array(
+        [
+            [1.0, 0.0, 0.0],
+            [0.0, c, -s],
+            [0.0, s, c],
+        ]
+    )
 
-def load_mesh(name: str) -> trimesh.Trimesh | None:
-    path = os.path.join(HERE, name)
-    if not os.path.exists(path):
-        print(f"  [warn] mesh not found: {name}")
-        return None
+
+def load_mesh(path: Path) -> trimesh.Trimesh:
     try:
-        mesh = trimesh.load_mesh(path)
-        if isinstance(mesh, trimesh.Scene):
-            mesh = trimesh.util.concatenate(list(mesh.geometry.values()))
-        return mesh
-    except Exception as e:
-        print(f"  [warn] could not load {name}: {e}")
-        return None
+        mesh = trimesh.load(path, force="scene")
+    except ModuleNotFoundError as exc:
+        if path.suffix.lower() in {".step", ".stp"} and exc.name == "cascadio":
+            raise RuntimeError(
+                "STEP loading requires cascadio. Run "
+                "`.venv\\Scripts\\python.exe -m pip install cascadio` first."
+            ) from exc
+        raise
+    if isinstance(mesh, trimesh.Scene):
+        mesh = trimesh.util.concatenate(tuple(mesh.geometry.values()))
+    if not isinstance(mesh, trimesh.Trimesh):
+        raise TypeError(f"Unsupported mesh type for {path}: {type(mesh)!r}")
+
+    # cascadio loads STEP in metres; STL files in this repo are millimetres.
+    extents = mesh.bounds[1] - mesh.bounds[0]
+    if path.suffix.lower() in {".step", ".stp"} or float(extents.max()) < 1.0:
+        mesh.vertices = np.asarray(mesh.vertices) * 1000.0
+    return mesh
 
 
-def bbox(mesh: trimesh.Trimesh):
-    """Return (min_xyz, max_xyz, center_xyz, extents) in metres (meshes are in mm)."""
-    v = mesh.vertices * 1e-3          # mm → m
-    lo = v.min(axis=0)
-    hi = v.max(axis=0)
-    return lo, hi, (lo + hi) / 2, hi - lo
+def bounds(mesh: trimesh.Trimesh) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    vertices = np.asarray(mesh.vertices)
+    lo = vertices.min(axis=0)
+    hi = vertices.max(axis=0)
+    centre = (lo + hi) / 2.0
+    return lo, hi, centre, hi - lo
 
 
-# ── print mesh stats ──────────────────────────────────────────────────────────
-
-def analyse():
-    files = [
-        "coxa-996-left.stl",
-        "coxa-996-right.stl",
-        "femur-996-left.stl",
-        "femur-996-right.stl",
-        "tibia-996-left.stl",
-        "tibia-996-right.stl",
-        "tip.stl",
-        "top-cover2 (a).stl",
-        "servo2040-bottom-cover (a).stl",
-        "frame.stl",
-        "servo-MG996R.stl",
-    ]
-    print("\n=== Mesh bounding boxes (metres) ===")
-    for f in files:
-        m = load_mesh(f)
-        if m is None:
-            continue
-        lo, hi, ctr, ext = bbox(m)
-        print(f"  {f}")
-        print(f"    min : {lo.round(4)}")
-        print(f"    max : {hi.round(4)}")
-        print(f"    size: {ext.round(4)}")
-        print(f"    ctr : {ctr.round(4)}")
+def write_mesh(target: str, mesh: trimesh.Trimesh) -> None:
+    mesh.export(MESH_DIR / target)
 
 
-# ── URDF helpers ──────────────────────────────────────────────────────────────
+def transformed_mesh(source: Path, rotation: np.ndarray | None = None, offset: np.ndarray | None = None) -> trimesh.Trimesh:
+    mesh = load_mesh(source)
+    vertices = np.asarray(mesh.vertices)
+    if rotation is not None:
+        vertices = (rotation @ vertices.T).T
+        if np.linalg.det(rotation) < 0:
+            mesh.invert()
+    if offset is not None:
+        vertices = vertices + offset
+    mesh.vertices = vertices
+    return mesh
 
-def fmt_xyz(v):
-    return f"{v[0]:.6f} {v[1]:.6f} {v[2]:.6f}"
 
-def fmt_rpy(r, p, y):
-    return f"{r:.6f} {p:.6f} {y:.6f}"
+def centred_mesh(source: Path, target: str, rotation: np.ndarray | None = None) -> None:
+    mesh = transformed_mesh(source, rotation=rotation)
+    _, _, centre, _ = bounds(mesh)
+    mesh.vertices = np.asarray(mesh.vertices) - centre
+    write_mesh(target, mesh)
 
-def mesh_tag(fname, scale="0.001 0.001 0.001", xyz="0 0 0", rpy="0 0 0"):
-    """Return a <visual> + <collision> block referencing the given STL (in mm → m scale).
-    Uses relative paths so viewers like LinkForge can resolve them without a ROS install."""
+
+def offset_mesh(source: Path, target: str, offset: np.ndarray, rotation: np.ndarray | None = None) -> None:
+    write_mesh(target, transformed_mesh(source, rotation=rotation, offset=offset))
+
+
+def mirrored_mesh(source: Path, target: str, axis: int) -> None:
+    mirror = np.eye(3)
+    mirror[axis, axis] = -1.0
+    write_mesh(target, transformed_mesh(source, rotation=mirror))
+
+
+def servo_mesh(target: str, rotation: np.ndarray) -> None:
+    shaft = rotation @ SERVO_SHAFT
+    write_mesh(target, transformed_mesh(HERE / "servo-MG996R.stl", rotation=rotation, offset=-shaft))
+
+
+def tibia_tip_for(mesh_name: str) -> tuple[float, float, float]:
+    """Return the lowest-foot contact point in metres for a generated tibia."""
+    mesh = load_mesh(MESH_DIR / mesh_name)
+    vertices = np.asarray(mesh.vertices)
+    low = vertices[:, 2].min()
+    foot = vertices[vertices[:, 2] < low + 1.0].mean(axis=0)
+    return tuple((foot * 0.001).tolist())
+
+
+def build_meshes() -> None:
+    MESH_DIR.mkdir(exist_ok=True)
+    for old_mesh in MESH_DIR.glob("*.stl"):
+        old_mesh.unlink()
+
+    centred_mesh(STEP_DIR / "frame.step", "frame.stl", rotation=rot_x(math.pi))
+    centred_mesh(STEP_DIR / "top-cover.step", "top-cover.stl")
+
+    top = load_mesh(STEP_DIR / "top-cover.step")
+    _, _, top_centre, _ = bounds(top)
+    offset_mesh(STEP_DIR / "bottom-cover-flat.step", "bottom-cover-flat.stl", offset=-top_centre)
+    offset_mesh(STEP_DIR / "bottom-cover.step", "bottom-cover.stl", offset=-top_centre)
+
+    write_mesh("coxa-left.stl", load_mesh(STEP_DIR / "coxa.step"))
+    mirrored_mesh(STEP_DIR / "coxa.step", "coxa-right.stl", axis=1)
+
+    write_mesh("femur-right.stl", load_mesh(STEP_DIR / "femur.step"))
+    # The repository's left femur STL is the right femur mirrored through Z.
+    mirrored_mesh(STEP_DIR / "femur.step", "femur-left.stl", axis=2)
+
+    write_mesh("tibia-right.stl", load_mesh(STEP_DIR / "tibia.step"))
+    mirrored_mesh(STEP_DIR / "tibia.step", "tibia-left.stl", axis=1)
+
+    # Hip servo: shaft points down through the frame, body sits above the shaft.
+    servo_mesh("servo-hip.stl", rot_x(math.pi))
+
+    # Limb servos: native shaft +Z becomes joint +Y/-Y, and native body length X
+    # becomes vertical Z.  This matches the tall printed coxa/femur servo pockets.
+    limb_right = np.array(
+        [
+            [0.0, 1.0, 0.0],
+            [0.0, 0.0, 1.0],
+            [1.0, 0.0, 0.0],
+        ]
+    )
+    limb_left = np.array(
+        [
+            [0.0, 1.0, 0.0],
+            [0.0, 0.0, -1.0],
+            [-1.0, 0.0, 0.0],
+        ]
+    )
+    servo_mesh("servo-limb-right.stl", limb_right)
+    servo_mesh("servo-limb-left.stl", limb_left)
+
+
+def fmt_xyz(values: tuple[float, float, float] | np.ndarray) -> str:
+    return f"{values[0]:.6f} {values[1]:.6f} {values[2]:.6f}"
+
+
+def fmt_rpy(roll: float, pitch: float, yaw: float) -> str:
+    return f"{roll:.6f} {pitch:.6f} {yaw:.6f}"
+
+
+def mesh_block(filename: str, scale: str = "0.001 0.001 0.001") -> str:
     return f"""\
       <visual>
-        <origin xyz="{xyz}" rpy="{rpy}"/>
         <geometry>
-          <mesh filename="./{fname}" scale="{scale}"/>
+          <mesh filename="./meshes/{filename}" scale="{scale}"/>
         </geometry>
-        <material name="grey">
-          <color rgba="0.7 0.7 0.7 1"/>
-        </material>
+        <material name="grey"/>
       </visual>
       <collision>
-        <origin xyz="{xyz}" rpy="{rpy}"/>
         <geometry>
-          <mesh filename="./{fname}" scale="{scale}"/>
+          <mesh filename="./meshes/{filename}" scale="{scale}"/>
         </geometry>
       </collision>"""
 
 
-# ── mesh pivot estimation ─────────────────────────────────────────────────────
-# For each part, trimesh tells us the bounding box in the STL's own frame (mm).
-# We need to find which point in that frame corresponds to the joint pivot.
-#
-# Coxa (left): the coxa servo sits at one end, the femur pivot is COXA_LEN away.
-#   The STL is printed flat; its longest axis spans the coxa length.
-#   Pivot A (hip attach):  at the "start" end of the coxa.
-#   Pivot B (femur joint): at the "far" end, COXA_LEN = 43 mm along the longest axis.
-#
-# Femur (left): similarly, pivots at 0 and FEMUR_LEN = 80 mm along longest axis.
-# Tibia (left): pivots at 0 and TIBIA_LEN = 134 mm along longest axis.
-#
-# We estimate the pivot by finding the two ends of the principal axis that align
-# with the expected segment length, and choose the end closest to the bbox minimum
-# on that axis as pivot A.
-
-def estimate_coxa_mesh_offset(side: str):
-    """
-    Return (mesh_origin_xyz, mesh_origin_rpy) for the coxa link.
-    The coxa joint origin is placed at the hip axis (output shaft of servo 1).
-    The mesh needs to be translated so that hip-shaft end of the coxa aligns with (0,0,0)
-    and the coxa extends along +X.
-
-    For the LEFT coxa the mesh's principal axis should already point outward;
-    for the RIGHT coxa it may be mirrored.
-    """
-    fname = f"coxa-996-{side}.stl"
-    m = load_mesh(fname)
-    if m is None:
-        return "0 0 0", "0 0 0"
-    lo, hi, ctr, ext = bbox(m)
-
-    # Identify the principal (longest) axis index
-    ax = int(np.argmax(ext))
-    # The hip-attach end is at lo[ax]; the femur pivot end is at hi[ax].
-    # We want the joint origin (hip pivot) to be at world (0,0,0) in the link frame.
-    # So we offset the mesh so that lo[ax] on principal axis maps to 0.
-    offset = np.zeros(3)
-    offset[ax] = -lo[ax]  # shift so that hip-attach start is at 0
-    # also centre transverse axes
-    for i in range(3):
-        if i != ax:
-            offset[i] = -ctr[i]
-
-    rpy = "0 0 0"
-    # For right coxa, the mesh may be mirrored. We just use the mesh as-is and rely
-    # on the joint yaw to orient it correctly.
-    return fmt_xyz(offset), rpy
-
-
-def estimate_femur_mesh_offset(side: str):
-    """Femur kinematic length (FEMUR_LEN=80mm) runs along the Y-axis in STL space.
-    Apply Rz(-π/2) so mesh-Y aligns with link +X.
-    With that rotation the correct origin is: xyz = (-lo_y, ctr_x, -ctr_z)."""
-    fname = f"femur-996-{side}.stl"
-    m = load_mesh(fname)
-    if m is None:
-        return "0 0 0", "0 0 0"
-    lo, hi, ctr, ext = bbox(m)
-    offset = np.array([-lo[1], ctr[0], -ctr[2]])
-    return fmt_xyz(offset), f"0 0 {-math.pi/2:.6f}"
-
-
-def estimate_tibia_mesh_offset(side: str):
-    """Tibia kinematic length (≈100mm) also runs along the Y-axis in STL space.
-    Apply Rz(-π/2) so mesh-Y aligns with link +X.
-    Derivation: xyz = (-lo_y, ctr_x, -ctr_z)."""
-    fname = f"tibia-996-{side}.stl"
-    m = load_mesh(fname)
-    if m is None:
-        return "0 0 0", "0 0 0"
-    lo, hi, ctr, ext = bbox(m)
-    offset = np.array([-lo[1], ctr[0], -ctr[2]])
-    return fmt_xyz(offset), f"0 0 {-math.pi/2:.6f}"
-
-
-def get_tibia_stl_length(side: str) -> float:
-    """Return the actual Y-span of the tibia STL in metres (pivot-to-end of mesh)."""
-    m = load_mesh(f"tibia-996-{side}.stl")
-    if m is None:
-        return TIBIA_LEN
-    lo, hi, ctr, ext = bbox(m)
-    return float(ext[1])  # Y-axis span
-
-
-def estimate_body_mesh_offset():
-    fname = "top-cover2 (a).stl"
-    m = load_mesh(fname)
-    if m is None:
-        return "0 0 0", "0 0 0"
-    lo, hi, ctr, ext = bbox(m)
-    # Centre the body mesh on the origin
-    offset = -ctr
-    return fmt_xyz(offset), "0 0 0"
-
-
-def estimate_tip_mesh_offset():
-    m = load_mesh("tip.stl")
-    if m is None:
-        return "0 0 0", "0 0 0"
-    lo, hi, ctr, ext = bbox(m)
-    offset = -ctr
-    return fmt_xyz(offset), "0 0 0"
-
-
-# ── servo mesh placement ─────────────────────────────────────────────────────
-# servo-MG996R.stl  (updated STL)
-#   bbox: min=[-27.10, -13.175, -1.407]  max=[27.10, 6.825, 45.093]  mm
-#   body: 54.2 × 20.0 × 46.5 mm  (long axis = X, narrow = Y, height = Z)
-#   Mounting ears span full 54.2 mm in X at z≈29–33 mm.
-#   Shaft XY centre (measured from z>42 mm band): (10.08, −3.18) mm
-#   Shaft exits case top at Z ≈ 39 mm  →  joint pivot reference point.
-_SX =  0.01008   # shaft centre X  in STL frame
-_SY = -0.00318   # shaft centre Y  in STL frame  (negative — offset toward -Y side)
-_SZ =  0.039     # shaft exit Z    in STL frame
-
-# Hip servo: shaft along +Z in STL.  Apply Rx(π) so body goes ABOVE joint and
-# shaft points DOWN through frame to coxa horn.
-# Rx(π): STL(x,y,z) → (x,−y,−z).  Shaft STL (_SX,_SY,_SZ) → (_SX,−_SY,−_SZ).
-# Offset to bring that to origin: (−_SX, _SY, _SZ)  [note _SY is already negative]
-HIP_SERVO_XYZ = f"{-_SX:.6f} {_SY:.6f} {_SZ:.6f}"
-HIP_SERVO_RPY = "3.141593 0 0"
-
-# Shoulder / knee servos: shaft must point along link +Y (pitch axis).
-# Apply Rx(−π/2):  STL(x, y, z) → link(x, z, −y)
-# Shaft STL (_SX, _SY, _SZ) → link (_SX, _SZ, −_SY)
-# Move that point to (0,0,0):
-LIMB_SERVO_XYZ = f"{-_SX:.6f} {-_SZ:.6f} {_SY:.6f}"
-LIMB_SERVO_RPY = "-1.5708 0 0"
-
-
-# ── inertial placeholders ─────────────────────────────────────────────────────
-
-def inertial_box(mass, x, y, z):
-    ixx = mass / 12 * (y**2 + z**2)
-    iyy = mass / 12 * (x**2 + z**2)
-    izz = mass / 12 * (x**2 + y**2)
+def inertial_box(mass: float, x: float, y: float, z: float) -> str:
+    ixx = mass / 12.0 * (y**2 + z**2)
+    iyy = mass / 12.0 * (x**2 + z**2)
+    izz = mass / 12.0 * (x**2 + y**2)
     return f"""\
       <inertial>
         <mass value="{mass}"/>
@@ -275,117 +233,56 @@ def inertial_box(mass, x, y, z):
       </inertial>"""
 
 
-# ── URDF generation ───────────────────────────────────────────────────────────
+def add_link(lines: list[str], name: str, mass: float, size: tuple[float, float, float], visuals: list[str]) -> None:
+    lines.append(f'  <link name="{name}">')
+    lines.append(inertial_box(mass, *size))
+    lines.extend(visuals)
+    lines.append("  </link>")
+    lines.append("")
 
-def generate_urdf():
-    lines = ['<?xml version="1.0" encoding="utf-8"?>',
-             '<robot name="hexapod_v2">',
-             '',
-             '  <!-- ═══════════════════════════════════════════════════════════',
-             '       Hexapod-v2  URDF',
-             '       Generated by generate_urdf.py',
-             '       Coordinate frame: x=right  y=forward  z=up',
-             '       All meshes in hexapod-v2/ directory (STLs in mm → scaled 0.001).',
-             '  ════════════════════════════════════════════════════════════ -->',
-             '',
-             '  <!-- ─── Materials ────────────────────────────────────────── -->',
-             '  <material name="grey">  <color rgba="0.7 0.7 0.7 1.0"/> </material>',
-             '  <material name="dark">  <color rgba="0.2 0.2 0.2 1.0"/> </material>',
-             '  <material name="white"> <color rgba="0.9 0.9 0.9 1.0"/> </material>',
-             '']
 
-    # ── base_link ─────────────────────────────────────────────────────────────
-    body_xyz, body_rpy = estimate_body_mesh_offset()
-    # Frame: apply Rx(π) to flip right-side up.
-    # Rx(π): (x,y,z)→(x,−y,−z); new centre = (cx,−cy,−cz); offset = (−cx, cy, cz).
-    frame_m = load_mesh("frame.stl")
-    if frame_m is not None:
-        _, _, frame_ctr, _ = bbox(frame_m)
-        frame_xyz = fmt_xyz(np.array([-frame_ctr[0], frame_ctr[1], frame_ctr[2]]))
-    else:
-        frame_xyz = "0 0 0"
-    frame_rpy = "3.141593 0 0"
+def generate_urdf() -> Path:
+    build_meshes()
 
-    lines += [
-        '  <!-- ─── Body / base_link ─────────────────────────────────────── -->',
-        '  <link name="base_link">',
-        inertial_box(0.600, 0.170, 0.165, 0.040),
-        mesh_tag("frame.stl",            xyz=frame_xyz, rpy=frame_rpy),
-        mesh_tag("top-cover2 (a).stl",   xyz=body_xyz,  rpy=body_rpy),
-        mesh_tag("servo2040-bottom-cover (a).stl",
-                 xyz=body_xyz, rpy=body_rpy),
-        '  </link>',
-        '',
+    lines = [
+        '<?xml version="1.0" encoding="utf-8"?>',
+        '<robot name="hexapod_v2">',
+        "",
+        '  <material name="grey"><color rgba="0.7 0.7 0.7 1.0"/></material>',
+        '  <material name="dark"><color rgba="0.2 0.2 0.2 1.0"/></material>',
+        "",
     ]
 
-    # ── six legs ──────────────────────────────────────────────────────────────
-    for leg_name, (mx, my, mz), side, yaw_deg in LEGS:
-        yaw_rad  = math.radians(yaw_deg)
-        coxa_xyz, coxa_rpy     = estimate_coxa_mesh_offset(side)
-        femur_xyz, femur_rpy   = estimate_femur_mesh_offset(side)
-        tibia_xyz, tibia_rpy   = estimate_tibia_mesh_offset(side)
-        tip_xyz,   tip_rpy     = estimate_tip_mesh_offset()
-        tibia_stl_len          = get_tibia_stl_length(side)
+    add_link(
+        lines,
+        "base_link",
+        0.600,
+        (0.170, 0.165, 0.040),
+        [
+            mesh_block("frame.stl"),
+            mesh_block("top-cover.stl"),
+            mesh_block("bottom-cover-flat.stl"),
+        ],
+    )
 
-        coxa_stl  = f"coxa-996-{side}.stl"
-        femur_stl = f"femur-996-{side}.stl"
-        tibia_stl = f"tibia-996-{side}.stl"
+    tibia_tip = {
+        "left": tibia_tip_for("tibia-left.stl"),
+        "right": tibia_tip_for("tibia-right.stl"),
+    }
 
-        # ── hip servo link (fixed to base_link) ──
-        lines += [
-            f'  <link name="{leg_name}_hip_servo">',
-            inertial_box(0.055, 0.0542, 0.020, 0.0465),
-            mesh_tag("servo-MG996R.stl", xyz=HIP_SERVO_XYZ, rpy=HIP_SERVO_RPY),
-            '  </link>',
-            '',
-        ]
+    for leg_name, mount_xyz, side, yaw in LEGS:
+        coxa_mesh = f"coxa-{side}.stl"
+        femur_mesh = f"femur-{side}.stl"
+        tibia_mesh = f"tibia-{side}.stl"
+        limb_servo = f"servo-limb-{side}.stl"
 
-        # ── coxa link (rotates around hip servo shaft) ──
-        lines += [
-            f'  <link name="{leg_name}_coxa">',
-            inertial_box(0.040, COXA_LEN, 0.030, 0.025),
-            mesh_tag(coxa_stl, xyz=coxa_xyz, rpy=coxa_rpy),
-            '  </link>',
-            '',
-        ]
+        add_link(lines, f"{leg_name}_hip_servo", 0.055, (0.0542, 0.020, 0.0465), [mesh_block("servo-hip.stl")])
+        add_link(lines, f"{leg_name}_coxa", 0.040, (COXA_LEN, 0.030, 0.060), [mesh_block(coxa_mesh)])
+        add_link(lines, f"{leg_name}_shoulder_servo", 0.055, (0.0542, 0.020, 0.0465), [mesh_block(limb_servo)])
+        add_link(lines, f"{leg_name}_femur", 0.060, (FEMUR_LEN, 0.020, 0.060), [mesh_block(femur_mesh)])
+        add_link(lines, f"{leg_name}_knee_servo", 0.055, (0.0542, 0.020, 0.0465), [mesh_block(limb_servo)])
+        add_link(lines, f"{leg_name}_tibia", 0.040, (TIBIA_LEN, 0.015, 0.015), [mesh_block(tibia_mesh)])
 
-        # ── shoulder servo link (fixed to coxa) ──
-        lines += [
-            f'  <link name="{leg_name}_shoulder_servo">',
-            inertial_box(0.055, 0.0542, 0.020, 0.0465),
-            mesh_tag("servo-MG996R.stl", xyz=LIMB_SERVO_XYZ, rpy=LIMB_SERVO_RPY),
-            '  </link>',
-            '',
-        ]
-
-        # ── femur link (rotates around shoulder servo shaft) ──
-        lines += [
-            f'  <link name="{leg_name}_femur">',
-            inertial_box(0.060, FEMUR_LEN, 0.020, 0.025),
-            mesh_tag(femur_stl, xyz=femur_xyz, rpy=femur_rpy),
-            '  </link>',
-            '',
-        ]
-
-        # ── knee servo link (fixed to femur) ──
-        lines += [
-            f'  <link name="{leg_name}_knee_servo">',
-            inertial_box(0.055, 0.0542, 0.020, 0.0465),
-            mesh_tag("servo-MG996R.stl", xyz=LIMB_SERVO_XYZ, rpy=LIMB_SERVO_RPY),
-            '  </link>',
-            '',
-        ]
-
-        # ── tibia link (rotates around knee servo shaft) ──
-        lines += [
-            f'  <link name="{leg_name}_tibia">',
-            inertial_box(0.040, tibia_stl_len, 0.015, 0.015),
-            mesh_tag(tibia_stl, xyz=tibia_xyz, rpy=tibia_rpy),
-            '  </link>',
-            '',
-        ]
-
-        # ── tip link (contact sphere) ──
         lines += [
             f'  <link name="{leg_name}_tip">',
             '      <inertial>',
@@ -399,103 +296,82 @@ def generate_urdf():
             '      <collision>',
             '        <geometry><sphere radius="0.008"/></geometry>',
             '      </collision>',
-            '  </link>',
-            '',
-        ]
-
-        # ── joint: base → hip_servo (fixed — servo body stays with frame) ──
-        lines += [
+            "  </link>",
+            "",
             f'  <joint name="{leg_name}_hip_servo_joint" type="fixed">',
-            f'    <parent link="base_link"/>',
-            f'    <child  link="{leg_name}_hip_servo"/>',
-            f'    <origin xyz="{fmt_xyz((mx, my, mz))}" rpy="{fmt_rpy(0, 0, yaw_rad)}"/>',
-            f'  </joint>',
-            '',
-        ]
-
-        # ── joint: base → coxa (revolute, coxa rotates AROUND the hip servo shaft) ──
-        lines += [
+            '    <parent link="base_link"/>',
+            f'    <child link="{leg_name}_hip_servo"/>',
+            f'    <origin xyz="{fmt_xyz(mount_xyz)}" rpy="{fmt_rpy(0.0, 0.0, yaw)}"/>',
+            "  </joint>",
+            "",
             f'  <joint name="{leg_name}_hip" type="revolute">',
-            f'    <parent link="base_link"/>',
-            f'    <child  link="{leg_name}_coxa"/>',
-            f'    <origin xyz="{fmt_xyz((mx, my, mz))}" rpy="{fmt_rpy(0, 0, yaw_rad)}"/>',
-            f'    <axis xyz="0 0 1"/>',
-            f'    <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>',
-            f'    <dynamics damping="0.01" friction="0.05"/>',
-            f'  </joint>',
-            '',
-        ]
-
-        # ── joint: coxa → shoulder_servo (fixed — servo body moves with coxa) ──
-        lines += [
+            '    <parent link="base_link"/>',
+            f'    <child link="{leg_name}_coxa"/>',
+            f'    <origin xyz="{fmt_xyz(mount_xyz)}" rpy="{fmt_rpy(0.0, 0.0, yaw)}"/>',
+            '    <axis xyz="0 0 1"/>',
+            '    <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>',
+            '    <dynamics damping="0.01" friction="0.05"/>',
+            "  </joint>",
+            "",
             f'  <joint name="{leg_name}_shoulder_servo_joint" type="fixed">',
             f'    <parent link="{leg_name}_coxa"/>',
-            f'    <child  link="{leg_name}_shoulder_servo"/>',
-            f'    <origin xyz="{fmt_xyz((COXA_LEN, 0.0, 0.0))}" rpy="{fmt_rpy(0, 0, 0)}"/>',
-            f'  </joint>',
-            '',
-        ]
-
-        # ── joint: coxa → femur (revolute, femur rotates AROUND the shoulder servo shaft) ──
-        lines += [
+            f'    <child link="{leg_name}_shoulder_servo"/>',
+            f'    <origin xyz="{fmt_xyz((COXA_LEN, 0.0, 0.0))}" rpy="{fmt_rpy(0.0, 0.0, 0.0)}"/>',
+            "  </joint>",
+            "",
             f'  <joint name="{leg_name}_shoulder" type="revolute">',
             f'    <parent link="{leg_name}_coxa"/>',
-            f'    <child  link="{leg_name}_femur"/>',
-            f'    <origin xyz="{fmt_xyz((COXA_LEN, 0.0, 0.0))}" rpy="{fmt_rpy(0, 0, 0)}"/>',
-            f'    <axis xyz="0 1 0"/>',
-            f'    <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>',
-            f'    <dynamics damping="0.01" friction="0.05"/>',
-            f'  </joint>',
-            '',
-        ]
-
-        # ── joint: femur → knee_servo (fixed — servo body moves with femur) ──
-        lines += [
+            f'    <child link="{leg_name}_femur"/>',
+            f'    <origin xyz="{fmt_xyz((COXA_LEN, 0.0, 0.0))}" rpy="{fmt_rpy(0.0, 0.0, 0.0)}"/>',
+            '    <axis xyz="0 1 0"/>',
+            '    <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>',
+            '    <dynamics damping="0.01" friction="0.05"/>',
+            "  </joint>",
+            "",
             f'  <joint name="{leg_name}_knee_servo_joint" type="fixed">',
             f'    <parent link="{leg_name}_femur"/>',
-            f'    <child  link="{leg_name}_knee_servo"/>',
-            f'    <origin xyz="{fmt_xyz((FEMUR_LEN, 0.0, 0.0))}" rpy="{fmt_rpy(0, 0, 0)}"/>',
-            f'  </joint>',
-            '',
-        ]
-
-        # ── joint: femur → tibia (revolute, tibia rotates AROUND the knee servo shaft) ──
-        lines += [
+            f'    <child link="{leg_name}_knee_servo"/>',
+            f'    <origin xyz="{fmt_xyz((FEMUR_LEN, 0.0, 0.0))}" rpy="{fmt_rpy(0.0, 0.0, 0.0)}"/>',
+            "  </joint>",
+            "",
             f'  <joint name="{leg_name}_knee" type="revolute">',
             f'    <parent link="{leg_name}_femur"/>',
-            f'    <child  link="{leg_name}_tibia"/>',
-            f'    <origin xyz="{fmt_xyz((FEMUR_LEN, 0.0, 0.0))}" rpy="{fmt_rpy(0, 0, 0)}"/>',
-            f'    <axis xyz="0 1 0"/>',
-            f'    <limit lower="-2.0944" upper="0.5236" effort="2.0" velocity="6.28"/>',
-            f'    <dynamics damping="0.01" friction="0.05"/>',
-            f'  </joint>',
-            '',
-        ]
-
-        # ── joint: tibia → tip (fixed contact at end of tibia mesh) ──
-        lines += [
+            f'    <child link="{leg_name}_tibia"/>',
+            f'    <origin xyz="{fmt_xyz((FEMUR_LEN, 0.0, 0.0))}" rpy="{fmt_rpy(0.0, 0.0, 0.0)}"/>',
+            '    <axis xyz="0 1 0"/>',
+            '    <limit lower="-2.0944" upper="0.5236" effort="2.0" velocity="6.28"/>',
+            '    <dynamics damping="0.01" friction="0.05"/>',
+            "  </joint>",
+            "",
             f'  <joint name="{leg_name}_tip_joint" type="fixed">',
             f'    <parent link="{leg_name}_tibia"/>',
-            f'    <child  link="{leg_name}_tip"/>',
-            f'    <origin xyz="{fmt_xyz((tibia_stl_len, 0.0, 0.0))}" rpy="{fmt_rpy(0, 0, 0)}"/>',
-            f'  </joint>',
-            '',
+            f'    <child link="{leg_name}_tip"/>',
+            f'    <origin xyz="{fmt_xyz(tibia_tip[side])}" rpy="{fmt_rpy(0.0, 0.0, 0.0)}"/>',
+            "  </joint>",
+            "",
         ]
 
-    lines += ['</robot>', '']
+    lines += ["</robot>", ""]
 
-    out_path = os.path.join(HERE, "hexapod-v2.urdf")
-    with open(out_path, "w", encoding="utf-8") as f:
-        f.write("\n".join(lines))
-    print(f"\nWrote: {out_path}")
+    out_path = HERE / "hexapod-v2.urdf"
+    out_path.write_text("\n".join(lines), encoding="utf-8")
+    ET.parse(out_path)
     return out_path
 
 
-# ── entry point ───────────────────────────────────────────────────────────────
+def analyse() -> None:
+    print("\nGenerated mesh bounding boxes (metres after URDF scale):")
+    for path in sorted(MESH_DIR.glob("*.stl")):
+        mesh = load_mesh(path)
+        lo, hi, centre, extents = bounds(mesh)
+        print(f"  {path.name}")
+        print(f"    min : {np.round(lo * 0.001, 4)}")
+        print(f"    max : {np.round(hi * 0.001, 4)}")
+        print(f"    size: {np.round(extents * 0.001, 4)}")
+        print(f"    ctr : {np.round(centre * 0.001, 4)}")
+
 
 if __name__ == "__main__":
-    print("Analysing meshes …")
+    written = generate_urdf()
     analyse()
-    print("\nGenerating URDF …")
-    generate_urdf()
-    print("Done.")
+    print(f"\nWrote: {written}")
