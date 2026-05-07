@@ -38,21 +38,31 @@ FEMUR_LEN = 0.080
 TIBIA_LEN = 0.134
 
 
-# Body mount locations from chica-config-2040.txt.
-BODY_FRONT_Y = 0.0835
-BODY_CORNER_X = 0.063
-BODY_MID_X = 0.0815
 BODY_Z = -0.010
 
 
-# name, mount xyz, side, yaw angle from +X toward the outward leg direction
+def frame_leg(
+    name: str,
+    hip_xy_mm: tuple[float, float],
+    inner_xy_mm: tuple[float, float],
+    side: str,
+) -> tuple[str, tuple[float, float, float], str, float]:
+    hip = np.array(hip_xy_mm, dtype=float)
+    inner = np.array(inner_xy_mm, dtype=float)
+    yaw = math.atan2(*(hip - inner)[::-1])
+    return name, (hip[0] * 0.001, hip[1] * 0.001, BODY_Z), side, yaw
+
+
+# Hip centers recovered from the frame STEP's six r=8mm vertical cylinder
+# centers.  Yaw is the frame arm centerline from the inner r=2mm cylinder to
+# the hip cylinder, so the coxa/servo assembly lands on the actual frame holes.
 LEGS = [
-    ("l1", (-BODY_CORNER_X, BODY_FRONT_Y, BODY_Z), "left", math.atan2(BODY_FRONT_Y, -BODY_CORNER_X)),
-    ("l2", (-BODY_MID_X, 0.0, BODY_Z), "left", math.pi),
-    ("l3", (-BODY_CORNER_X, -BODY_FRONT_Y, BODY_Z), "left", math.atan2(-BODY_FRONT_Y, -BODY_CORNER_X)),
-    ("r1", (BODY_CORNER_X, BODY_FRONT_Y, BODY_Z), "right", math.atan2(BODY_FRONT_Y, BODY_CORNER_X)),
-    ("r2", (BODY_MID_X, 0.0, BODY_Z), "right", 0.0),
-    ("r3", (BODY_CORNER_X, -BODY_FRONT_Y, BODY_Z), "right", math.atan2(-BODY_FRONT_Y, BODY_CORNER_X)),
+    frame_leg("l1", (-76.600, 84.571), (-49.023, 56.994), "left"),
+    frame_leg("l2", (-91.000, -8.029), (-52.000, -8.029), "left"),
+    frame_leg("l3", (-62.547, -94.718), (-34.970, -67.140), "left"),
+    frame_leg("r1", (76.600, 84.571), (49.023, 56.994), "right"),
+    frame_leg("r2", (91.000, -8.029), (52.000, -8.029), "right"),
+    frame_leg("r3", (62.547, -94.718), (34.970, -67.140), "right"),
 ]
 
 
