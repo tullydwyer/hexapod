@@ -71,12 +71,12 @@
   <link name="l1_hip_servo">
       <inertial>
         <mass value="0.055"/>
-        <inertia ixx="0.00002204" ixy="0" ixz="0"
-                 iyy="0.00001502" iyz="0"
-                 izz="0.00001033"/>
+        <inertia ixx="0.00001174" ixy="0" ixz="0"
+                 iyy="0.00002337" iyz="0"
+                 izz="0.00001530"/>
       </inertial>
       <visual>
-        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.010080 0.003180 -0.039000" rpy="0 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -85,7 +85,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.010080 0.003180 -0.039000" rpy="0 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -119,12 +119,12 @@
   <link name="l1_shoulder_servo">
       <inertial>
         <mass value="0.055"/>
-        <inertia ixx="0.00002204" ixy="0" ixz="0"
-                 iyy="0.00001502" iyz="0"
-                 izz="0.00001033"/>
+        <inertia ixx="0.00001174" ixy="0" ixz="0"
+                 iyy="0.00002337" iyz="0"
+                 izz="0.00001530"/>
       </inertial>
       <visual>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -133,7 +133,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -167,12 +167,12 @@
   <link name="l1_knee_servo">
       <inertial>
         <mass value="0.055"/>
-        <inertia ixx="0.00002204" ixy="0" ixz="0"
-                 iyy="0.00001502" iyz="0"
-                 izz="0.00001033"/>
+        <inertia ixx="0.00001174" ixy="0" ixz="0"
+                 iyy="0.00002337" iyz="0"
+                 izz="0.00001530"/>
       </inertial>
       <visual>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -181,7 +181,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -280,12 +280,12 @@
   <link name="l2_hip_servo">
       <inertial>
         <mass value="0.055"/>
-        <inertia ixx="0.00002204" ixy="0" ixz="0"
-                 iyy="0.00001502" iyz="0"
-                 izz="0.00001033"/>
+        <inertia ixx="0.00001174" ixy="0" ixz="0"
+                 iyy="0.00002337" iyz="0"
+                 izz="0.00001530"/>
       </inertial>
       <visual>
-        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.010080 0.003180 -0.039000" rpy="0 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -294,7 +294,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.010080 0.003180 -0.039000" rpy="0 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -328,12 +328,12 @@
   <link name="l2_shoulder_servo">
       <inertial>
         <mass value="0.055"/>
-        <inertia ixx="0.00002204" ixy="0" ixz="0"
-                 iyy="0.00001502" iyz="0"
-                 izz="0.00001033"/>
+        <inertia ixx="0.00001174" ixy="0" ixz="0"
+                 iyy="0.00002337" iyz="0"
+                 izz="0.00001530"/>
       </inertial>
       <visual>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -342,7 +342,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -376,12 +376,12 @@
   <link name="l2_knee_servo">
       <inertial>
         <mass value="0.055"/>
-        <inertia ixx="0.00002204" ixy="0" ixz="0"
-                 iyy="0.00001502" iyz="0"
-                 izz="0.00001033"/>
+        <inertia ixx="0.00001174" ixy="0" ixz="0"
+                 iyy="0.00002337" iyz="0"
+                 izz="0.00001530"/>
       </inertial>
       <visual>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -390,7 +390,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -489,12 +489,12 @@
   <link name="l3_hip_servo">
       <inertial>
         <mass value="0.055"/>
-        <inertia ixx="0.00002204" ixy="0" ixz="0"
-                 iyy="0.00001502" iyz="0"
-                 izz="0.00001033"/>
+        <inertia ixx="0.00001174" ixy="0" ixz="0"
+                 iyy="0.00002337" iyz="0"
+                 izz="0.00001530"/>
       </inertial>
       <visual>
-        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.010080 0.003180 -0.039000" rpy="0 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -503,7 +503,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.010080 0.003180 -0.039000" rpy="0 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -537,12 +537,12 @@
   <link name="l3_shoulder_servo">
       <inertial>
         <mass value="0.055"/>
-        <inertia ixx="0.00002204" ixy="0" ixz="0"
-                 iyy="0.00001502" iyz="0"
-                 izz="0.00001033"/>
+        <inertia ixx="0.00001174" ixy="0" ixz="0"
+                 iyy="0.00002337" iyz="0"
+                 izz="0.00001530"/>
       </inertial>
       <visual>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -551,7 +551,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -585,12 +585,12 @@
   <link name="l3_knee_servo">
       <inertial>
         <mass value="0.055"/>
-        <inertia ixx="0.00002204" ixy="0" ixz="0"
-                 iyy="0.00001502" iyz="0"
-                 izz="0.00001033"/>
+        <inertia ixx="0.00001174" ixy="0" ixz="0"
+                 iyy="0.00002337" iyz="0"
+                 izz="0.00001530"/>
       </inertial>
       <visual>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -599,7 +599,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -698,12 +698,12 @@
   <link name="r1_hip_servo">
       <inertial>
         <mass value="0.055"/>
-        <inertia ixx="0.00002204" ixy="0" ixz="0"
-                 iyy="0.00001502" iyz="0"
-                 izz="0.00001033"/>
+        <inertia ixx="0.00001174" ixy="0" ixz="0"
+                 iyy="0.00002337" iyz="0"
+                 izz="0.00001530"/>
       </inertial>
       <visual>
-        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.010080 0.003180 -0.039000" rpy="0 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -712,7 +712,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.010080 0.003180 -0.039000" rpy="0 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -746,12 +746,12 @@
   <link name="r1_shoulder_servo">
       <inertial>
         <mass value="0.055"/>
-        <inertia ixx="0.00002204" ixy="0" ixz="0"
-                 iyy="0.00001502" iyz="0"
-                 izz="0.00001033"/>
+        <inertia ixx="0.00001174" ixy="0" ixz="0"
+                 iyy="0.00002337" iyz="0"
+                 izz="0.00001530"/>
       </inertial>
       <visual>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -760,7 +760,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -794,12 +794,12 @@
   <link name="r1_knee_servo">
       <inertial>
         <mass value="0.055"/>
-        <inertia ixx="0.00002204" ixy="0" ixz="0"
-                 iyy="0.00001502" iyz="0"
-                 izz="0.00001033"/>
+        <inertia ixx="0.00001174" ixy="0" ixz="0"
+                 iyy="0.00002337" iyz="0"
+                 izz="0.00001530"/>
       </inertial>
       <visual>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -808,7 +808,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -907,12 +907,12 @@
   <link name="r2_hip_servo">
       <inertial>
         <mass value="0.055"/>
-        <inertia ixx="0.00002204" ixy="0" ixz="0"
-                 iyy="0.00001502" iyz="0"
-                 izz="0.00001033"/>
+        <inertia ixx="0.00001174" ixy="0" ixz="0"
+                 iyy="0.00002337" iyz="0"
+                 izz="0.00001530"/>
       </inertial>
       <visual>
-        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.010080 0.003180 -0.039000" rpy="0 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -921,7 +921,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.010080 0.003180 -0.039000" rpy="0 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -955,12 +955,12 @@
   <link name="r2_shoulder_servo">
       <inertial>
         <mass value="0.055"/>
-        <inertia ixx="0.00002204" ixy="0" ixz="0"
-                 iyy="0.00001502" iyz="0"
-                 izz="0.00001033"/>
+        <inertia ixx="0.00001174" ixy="0" ixz="0"
+                 iyy="0.00002337" iyz="0"
+                 izz="0.00001530"/>
       </inertial>
       <visual>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -969,7 +969,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -1003,12 +1003,12 @@
   <link name="r2_knee_servo">
       <inertial>
         <mass value="0.055"/>
-        <inertia ixx="0.00002204" ixy="0" ixz="0"
-                 iyy="0.00001502" iyz="0"
-                 izz="0.00001033"/>
+        <inertia ixx="0.00001174" ixy="0" ixz="0"
+                 iyy="0.00002337" iyz="0"
+                 izz="0.00001530"/>
       </inertial>
       <visual>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -1017,7 +1017,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -1116,12 +1116,12 @@
   <link name="r3_hip_servo">
       <inertial>
         <mass value="0.055"/>
-        <inertia ixx="0.00002204" ixy="0" ixz="0"
-                 iyy="0.00001502" iyz="0"
-                 izz="0.00001033"/>
+        <inertia ixx="0.00001174" ixy="0" ixz="0"
+                 iyy="0.00002337" iyz="0"
+                 izz="0.00001530"/>
       </inertial>
       <visual>
-        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.010080 0.003180 -0.039000" rpy="0 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -1130,7 +1130,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009360 -0.023210 -0.038000" rpy="0 0 0"/>
+        <origin xyz="-0.010080 0.003180 -0.039000" rpy="0 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -1164,12 +1164,12 @@
   <link name="r3_shoulder_servo">
       <inertial>
         <mass value="0.055"/>
-        <inertia ixx="0.00002204" ixy="0" ixz="0"
-                 iyy="0.00001502" iyz="0"
-                 izz="0.00001033"/>
+        <inertia ixx="0.00001174" ixy="0" ixz="0"
+                 iyy="0.00002337" iyz="0"
+                 izz="0.00001530"/>
       </inertial>
       <visual>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -1178,7 +1178,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -1212,12 +1212,12 @@
   <link name="r3_knee_servo">
       <inertial>
         <mass value="0.055"/>
-        <inertia ixx="0.00002204" ixy="0" ixz="0"
-                 iyy="0.00001502" iyz="0"
-                 izz="0.00001033"/>
+        <inertia ixx="0.00001174" ixy="0" ixz="0"
+                 iyy="0.00002337" iyz="0"
+                 izz="0.00001530"/>
       </inertial>
       <visual>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -1226,7 +1226,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.009360 -0.038000 0.023210" rpy="-1.5708 0 0"/>
+        <origin xyz="-0.010080 -0.039000 -0.003180" rpy="-1.5708 0 0"/>
         <geometry>
           <mesh filename="./servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>

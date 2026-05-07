@@ -235,21 +235,25 @@ def estimate_tip_mesh_offset():
 
 
 # ── servo mesh placement ─────────────────────────────────────────────────────
-# servo-MG996R.stl  size 19 × 43.5 × 54.5 mm
-# Shaft axis centre (from mesh analysis): XY = (9.36, 23.21) mm
-# Shaft exits case top at Z ≈ 38 mm — that is the joint pivot reference point.
-_SX = 0.00936   # shaft centre X
-_SY = 0.02321   # shaft centre Y
-_SZ = 0.038     # shaft exit from case top (Z pivot)
+# servo-MG996R.stl  (updated STL)
+#   bbox: min=[-27.10, -13.175, -1.407]  max=[27.10, 6.825, 45.093]  mm
+#   body: 54.2 × 20.0 × 46.5 mm  (long axis = X, narrow = Y, height = Z)
+#   Mounting ears span full 54.2 mm in X at z≈29–33 mm.
+#   Shaft XY centre (measured from z>42 mm band): (10.08, −3.18) mm
+#   Shaft exits case top at Z ≈ 39 mm  →  joint pivot reference point.
+_SX =  0.01008   # shaft centre X  in STL frame
+_SY = -0.00318   # shaft centre Y  in STL frame  (negative — offset toward -Y side)
+_SZ =  0.039     # shaft exit Z    in STL frame
 
-# Hip servo: shaft along +Z.  Move mesh so shaft exit sits at (0,0,0).
+# Hip servo: shaft already along +Z in STL.
+# Move mesh so shaft-exit point (_SX, _SY, _SZ) sits at (0,0,0).
 HIP_SERVO_XYZ = f"{-_SX:.6f} {-_SY:.6f} {-_SZ:.6f}"
 HIP_SERVO_RPY = "0 0 0"
 
-# Shoulder / knee servos: rotate Rx(-π/2) so STL-Z → link+Y.
-# After that rotation STL(x,y,z) → link(x, z, -y).
-# STL shaft exit (SX, SY, SZ) → link (SX, SZ, -SY).
-# xyz offset to bring that point to (0,0,0):
+# Shoulder / knee servos: shaft must point along link +Y (pitch axis).
+# Apply Rx(−π/2):  STL(x, y, z) → link(x, z, −y)
+# Shaft STL (_SX, _SY, _SZ) → link (_SX, _SZ, −_SY)
+# Move that point to (0,0,0):
 LIMB_SERVO_XYZ = f"{-_SX:.6f} {-_SZ:.6f} {_SY:.6f}"
 LIMB_SERVO_RPY = "-1.5708 0 0"
 
@@ -326,7 +330,7 @@ def generate_urdf():
         # ── hip servo link (fixed to base_link) ──
         lines += [
             f'  <link name="{leg_name}_hip_servo">',
-            inertial_box(0.055, 0.019, 0.0435, 0.054),
+            inertial_box(0.055, 0.0542, 0.020, 0.0465),
             mesh_tag("servo-MG996R.stl", xyz=HIP_SERVO_XYZ, rpy=HIP_SERVO_RPY),
             '  </link>',
             '',
@@ -344,7 +348,7 @@ def generate_urdf():
         # ── shoulder servo link (fixed to coxa) ──
         lines += [
             f'  <link name="{leg_name}_shoulder_servo">',
-            inertial_box(0.055, 0.019, 0.0435, 0.054),
+            inertial_box(0.055, 0.0542, 0.020, 0.0465),
             mesh_tag("servo-MG996R.stl", xyz=LIMB_SERVO_XYZ, rpy=LIMB_SERVO_RPY),
             '  </link>',
             '',
@@ -362,7 +366,7 @@ def generate_urdf():
         # ── knee servo link (fixed to femur) ──
         lines += [
             f'  <link name="{leg_name}_knee_servo">',
-            inertial_box(0.055, 0.019, 0.0435, 0.054),
+            inertial_box(0.055, 0.0542, 0.020, 0.0465),
             mesh_tag("servo-MG996R.stl", xyz=LIMB_SERVO_XYZ, rpy=LIMB_SERVO_RPY),
             '  </link>',
             '',
