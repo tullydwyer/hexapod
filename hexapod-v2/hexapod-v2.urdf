@@ -228,7 +228,7 @@
   <joint name="l1_tip_joint" type="fixed">
     <parent link="l1_tibia"/>
     <child link="l1_tip"/>
-    <origin xyz="-0.050423 -0.004499 -0.119208" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.050423 0.004499 -0.119208" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <link name="l2_hip_servo">
@@ -413,7 +413,7 @@
   <joint name="l2_tip_joint" type="fixed">
     <parent link="l2_tibia"/>
     <child link="l2_tip"/>
-    <origin xyz="-0.050423 -0.004499 -0.119208" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.050423 0.004499 -0.119208" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <link name="l3_hip_servo">
@@ -598,7 +598,7 @@
   <joint name="l3_tip_joint" type="fixed">
     <parent link="l3_tibia"/>
     <child link="l3_tip"/>
-    <origin xyz="-0.050423 -0.004499 -0.119208" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.050423 0.004499 -0.119208" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <link name="r1_hip_servo">
@@ -783,7 +783,7 @@
   <joint name="r1_tip_joint" type="fixed">
     <parent link="r1_tibia"/>
     <child link="r1_tip"/>
-    <origin xyz="-0.050423 0.004499 -0.119208" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.050423 -0.004499 -0.119208" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <link name="r2_hip_servo">
@@ -968,7 +968,7 @@
   <joint name="r2_tip_joint" type="fixed">
     <parent link="r2_tibia"/>
     <child link="r2_tip"/>
-    <origin xyz="-0.050423 0.004499 -0.119208" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.050423 -0.004499 -0.119208" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <link name="r3_hip_servo">
@@ -1153,7 +1153,7 @@
   <joint name="r3_tip_joint" type="fixed">
     <parent link="r3_tibia"/>
     <child link="r3_tip"/>
-    <origin xyz="-0.050423 0.004499 -0.119208" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.050423 -0.004499 -0.119208" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
 </robot>

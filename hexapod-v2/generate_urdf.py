@@ -170,6 +170,18 @@ def rot_x(angle: float) -> np.ndarray:
     )
 
 
+def rot_y(angle: float) -> np.ndarray:
+    c = math.cos(angle)
+    s = math.sin(angle)
+    return np.array(
+        [
+            [c, 0.0, s],
+            [0.0, 1.0, 0.0],
+            [-s, 0.0, c],
+        ]
+    )
+
+
 def rot_z(angle: float) -> np.ndarray:
     c = math.cos(angle)
     s = math.sin(angle)
@@ -313,11 +325,15 @@ def build_meshes() -> None:
         np.array([FEMUR_PROX_AXIS[0], FEMUR_PROX_AXIS[1], -FEMUR_PROX_AXIS[2]]),
     )
 
-    feature_aligned_mesh(STEP_DIR / "tibia.step", "tibia-right.stl", np.eye(3), TIBIA_PROX_AXIS)
+    # Rotate the tibia mounting face 180 degrees without flipping the leg
+    # upside down.  The proximal shaft remains on the knee servo origin, while
+    # the foot stays below the body in link-local Z.
+    tibia_to_servo = rot_z(math.pi)
+    feature_aligned_mesh(STEP_DIR / "tibia.step", "tibia-right.stl", tibia_to_servo, TIBIA_PROX_AXIS)
     feature_aligned_mesh(
         STEP_DIR / "tibia.step",
         "tibia-left.stl",
-        np.diag([1.0, -1.0, 1.0]),
+        tibia_to_servo @ np.diag([1.0, -1.0, 1.0]),
         np.array([TIBIA_PROX_AXIS[0], -TIBIA_PROX_AXIS[1], TIBIA_PROX_AXIS[2]]),
     )
 
