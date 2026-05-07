@@ -179,33 +179,38 @@ def estimate_coxa_mesh_offset(side: str):
 
 
 def estimate_femur_mesh_offset(side: str):
+    """Femur kinematic length (FEMUR_LEN=80mm) runs along the Y-axis in STL space.
+    Apply Rz(-π/2) so mesh-Y aligns with link +X.
+    With that rotation the correct origin is: xyz = (-lo_y, ctr_x, -ctr_z)."""
     fname = f"femur-996-{side}.stl"
     m = load_mesh(fname)
     if m is None:
         return "0 0 0", "0 0 0"
     lo, hi, ctr, ext = bbox(m)
-    ax = int(np.argmax(ext))
-    offset = np.zeros(3)
-    offset[ax] = -lo[ax]
-    for i in range(3):
-        if i != ax:
-            offset[i] = -ctr[i]
-    return fmt_xyz(offset), "0 0 0"
+    offset = np.array([-lo[1], ctr[0], -ctr[2]])
+    return fmt_xyz(offset), f"0 0 {-math.pi/2:.6f}"
 
 
 def estimate_tibia_mesh_offset(side: str):
+    """Tibia kinematic length (≈100mm) also runs along the Y-axis in STL space.
+    Apply Rz(-π/2) so mesh-Y aligns with link +X.
+    Derivation: xyz = (-lo_y, ctr_x, -ctr_z)."""
     fname = f"tibia-996-{side}.stl"
     m = load_mesh(fname)
     if m is None:
         return "0 0 0", "0 0 0"
     lo, hi, ctr, ext = bbox(m)
-    ax = int(np.argmax(ext))
-    offset = np.zeros(3)
-    offset[ax] = -lo[ax]
-    for i in range(3):
-        if i != ax:
-            offset[i] = -ctr[i]
-    return fmt_xyz(offset), "0 0 0"
+    offset = np.array([-lo[1], ctr[0], -ctr[2]])
+    return fmt_xyz(offset), f"0 0 {-math.pi/2:.6f}"
+
+
+def get_tibia_stl_length(side: str) -> float:
+    """Return the actual Y-span of the tibia STL in metres (pivot-to-end of mesh)."""
+    m = load_mesh(f"tibia-996-{side}.stl")
+    if m is None:
+        return TIBIA_LEN
+    lo, hi, ctr, ext = bbox(m)
+    return float(ext[1])  # Y-axis span
 
 
 def estimate_body_mesh_offset():
@@ -226,6 +231,27 @@ def estimate_tip_mesh_offset():
     lo, hi, ctr, ext = bbox(m)
     offset = -ctr
     return fmt_xyz(offset), "0 0 0"
+
+
+# ── servo mesh placement ─────────────────────────────────────────────────────
+# servo-MG996R.stl bbox: min=[0,0,0] max=[19,43.5,54.5] mm
+# Output shaft is at top of body, centered in X and Y.
+# Approximate shaft-base centre: (9.5, 21.75, 38.0) mm
+_S_X = 0.0095   # shaft centre X in STL space
+_S_Y = 0.02175  # shaft centre Y in STL space
+_S_Z = 0.038    # shaft-base height Z in STL space
+
+# Hip joint rotates around Z.  Shaft already points along Z in the STL.
+# xyz shifts the STL so the shaft centre sits at link origin (0,0,0).
+SERVO_HIP_XYZ = f"{-_S_X:.6f} {-_S_Y:.6f} {-_S_Z:.6f}"
+SERVO_HIP_RPY = "0 0 0"
+
+# Shoulder / knee joints rotate around Y.
+# Rotate the servo Rx(-π/2): STL-Z → link-Y, STL-Y → link-(-Z).
+# After Rx(-π/2) the shaft STL point (Sx, Sy, Sz) maps to (Sx, Sz, -Sy).
+# xyz = -(Sx, Sz, -Sy) to bring the shaft to link origin.
+SERVO_LIMB_XYZ = f"{-_S_X:.6f} {-_S_Z:.6f} {_S_Y:.6f}"
+SERVO_LIMB_RPY = "-1.5708 0 0"
 
 
 # ── inertial placeholders ─────────────────────────────────────────────────────
@@ -291,6 +317,7 @@ def generate_urdf():
         femur_xyz, femur_rpy   = estimate_femur_mesh_offset(side)
         tibia_xyz, tibia_rpy   = estimate_tibia_mesh_offset(side)
         tip_xyz,   tip_rpy     = estimate_tip_mesh_offset()
+        tibia_stl_len          = get_tibia_stl_length(side)
 
         coxa_stl  = f"coxa-996-{side}.stl"
         femur_stl = f"femur-996-{side}.stl"
@@ -298,29 +325,32 @@ def generate_urdf():
 
         lines.append(f'  <!-- ─── Leg {leg_name.upper()} ──────────────────────────────────────── -->')
 
-        # ── coxa link ──
+        # ── coxa link  (includes the hip servo visual) ──
         lines += [
             f'  <link name="{leg_name}_coxa">',
             inertial_box(0.040, COXA_LEN, 0.030, 0.025),
             mesh_tag(coxa_stl, xyz=coxa_xyz, rpy=coxa_rpy),
+            mesh_tag("servo-MG996R.stl", xyz=SERVO_HIP_XYZ, rpy=SERVO_HIP_RPY),
             '  </link>',
             '',
         ]
 
-        # ── femur link ──
+        # ── femur link  (includes the shoulder servo visual at link origin) ──
         lines += [
             f'  <link name="{leg_name}_femur">',
             inertial_box(0.060, FEMUR_LEN, 0.020, 0.025),
             mesh_tag(femur_stl, xyz=femur_xyz, rpy=femur_rpy),
+            mesh_tag("servo-MG996R.stl", xyz=SERVO_LIMB_XYZ, rpy=SERVO_LIMB_RPY),
             '  </link>',
             '',
         ]
 
-        # ── tibia link ──
+        # ── tibia link  (includes the knee servo visual at link origin) ──
         lines += [
             f'  <link name="{leg_name}_tibia">',
-            inertial_box(0.040, TIBIA_LEN, 0.015, 0.015),
+            inertial_box(0.040, tibia_stl_len, 0.015, 0.015),
             mesh_tag(tibia_stl, xyz=tibia_xyz, rpy=tibia_rpy),
+            mesh_tag("servo-MG996R.stl", xyz=SERVO_LIMB_XYZ, rpy=SERVO_LIMB_RPY),
             '  </link>',
             '',
         ]
@@ -385,12 +415,12 @@ def generate_urdf():
             '',
         ]
 
-        # ── joint: tibia → tip (fixed contact) ──
+        # ── joint: tibia → tip (fixed contact at end of tibia mesh) ──
         lines += [
             f'  <joint name="{leg_name}_tip_joint" type="fixed">',
             f'    <parent link="{leg_name}_tibia"/>',
             f'    <child  link="{leg_name}_tip"/>',
-            f'    <origin xyz="{fmt_xyz((TIBIA_LEN, 0.0, 0.0))}" rpy="{fmt_rpy(0, 0, 0)}"/>',
+            f'    <origin xyz="{fmt_xyz((tibia_stl_len, 0.0, 0.0))}" rpy="{fmt_rpy(0, 0, 0)}"/>',
             f'  </joint>',
             '',
         ]

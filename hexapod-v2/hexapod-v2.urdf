@@ -91,6 +91,21 @@
           <mesh filename="package://hexapod_v2/coxa-996-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
+      <visual>
+        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
   </link>
 
   <link name="l1_femur">
@@ -101,7 +116,7 @@
                  izz="0.00003400"/>
       </inertial>
       <visual>
-        <origin xyz="-0.103753 -0.148676 -0.021845" rpy="0 0 0"/>
+        <origin xyz="-0.108671 0.149545 -0.021845" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/femur-996-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -110,9 +125,24 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.103753 -0.148676 -0.021845" rpy="0 0 0"/>
+        <origin xyz="-0.108671 0.149545 -0.021845" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/femur-996-left.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+      <visual>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -121,11 +151,11 @@
       <inertial>
         <mass value="0.04"/>
         <inertia ixx="0.00000150" ixy="0" ixz="0"
-                 iyy="0.00006060" iyz="0"
-                 izz="0.00006060"/>
+                 iyy="0.00003413" iyz="0"
+                 izz="0.00003413"/>
       </inertial>
       <visual>
-        <origin xyz="-0.150000 -0.099962 -0.006250" rpy="0 0 0"/>
+        <origin xyz="-0.099962 0.150000 -0.006250" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/tibia-996-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -134,9 +164,24 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.150000 -0.099962 -0.006250" rpy="0 0 0"/>
+        <origin xyz="-0.099962 0.150000 -0.006250" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/tibia-996-left.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+      <visual>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -185,7 +230,7 @@
   <joint name="l1_tip_joint" type="fixed">
     <parent link="l1_tibia"/>
     <child  link="l1_tip"/>
-    <origin xyz="0.134000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.100076 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <!-- ─── Leg L2 ──────────────────────────────────────── -->
@@ -211,6 +256,21 @@
           <mesh filename="package://hexapod_v2/coxa-996-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
+      <visual>
+        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
   </link>
 
   <link name="l2_femur">
@@ -221,7 +281,7 @@
                  izz="0.00003400"/>
       </inertial>
       <visual>
-        <origin xyz="-0.103753 -0.148676 -0.021845" rpy="0 0 0"/>
+        <origin xyz="-0.108671 0.149545 -0.021845" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/femur-996-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -230,9 +290,24 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.103753 -0.148676 -0.021845" rpy="0 0 0"/>
+        <origin xyz="-0.108671 0.149545 -0.021845" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/femur-996-left.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+      <visual>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -241,11 +316,11 @@
       <inertial>
         <mass value="0.04"/>
         <inertia ixx="0.00000150" ixy="0" ixz="0"
-                 iyy="0.00006060" iyz="0"
-                 izz="0.00006060"/>
+                 iyy="0.00003413" iyz="0"
+                 izz="0.00003413"/>
       </inertial>
       <visual>
-        <origin xyz="-0.150000 -0.099962 -0.006250" rpy="0 0 0"/>
+        <origin xyz="-0.099962 0.150000 -0.006250" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/tibia-996-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -254,9 +329,24 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.150000 -0.099962 -0.006250" rpy="0 0 0"/>
+        <origin xyz="-0.099962 0.150000 -0.006250" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/tibia-996-left.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+      <visual>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -305,7 +395,7 @@
   <joint name="l2_tip_joint" type="fixed">
     <parent link="l2_tibia"/>
     <child  link="l2_tip"/>
-    <origin xyz="0.134000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.100076 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <!-- ─── Leg L3 ──────────────────────────────────────── -->
@@ -331,6 +421,21 @@
           <mesh filename="package://hexapod_v2/coxa-996-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
+      <visual>
+        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
   </link>
 
   <link name="l3_femur">
@@ -341,7 +446,7 @@
                  izz="0.00003400"/>
       </inertial>
       <visual>
-        <origin xyz="-0.103753 -0.148676 -0.021845" rpy="0 0 0"/>
+        <origin xyz="-0.108671 0.149545 -0.021845" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/femur-996-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -350,9 +455,24 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.103753 -0.148676 -0.021845" rpy="0 0 0"/>
+        <origin xyz="-0.108671 0.149545 -0.021845" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/femur-996-left.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+      <visual>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -361,11 +481,11 @@
       <inertial>
         <mass value="0.04"/>
         <inertia ixx="0.00000150" ixy="0" ixz="0"
-                 iyy="0.00006060" iyz="0"
-                 izz="0.00006060"/>
+                 iyy="0.00003413" iyz="0"
+                 izz="0.00003413"/>
       </inertial>
       <visual>
-        <origin xyz="-0.150000 -0.099962 -0.006250" rpy="0 0 0"/>
+        <origin xyz="-0.099962 0.150000 -0.006250" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/tibia-996-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -374,9 +494,24 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.150000 -0.099962 -0.006250" rpy="0 0 0"/>
+        <origin xyz="-0.099962 0.150000 -0.006250" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/tibia-996-left.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+      <visual>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -425,7 +560,7 @@
   <joint name="l3_tip_joint" type="fixed">
     <parent link="l3_tibia"/>
     <child  link="l3_tip"/>
-    <origin xyz="0.134000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.100076 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <!-- ─── Leg R1 ──────────────────────────────────────── -->
@@ -451,6 +586,21 @@
           <mesh filename="package://hexapod_v2/coxa-996-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
+      <visual>
+        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
   </link>
 
   <link name="r1_femur">
@@ -461,7 +611,7 @@
                  izz="0.00003400"/>
       </inertial>
       <visual>
-        <origin xyz="-0.104075 -0.149998 -0.021845" rpy="0 0 0"/>
+        <origin xyz="-0.110037 0.150002 -0.021845" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/femur-996-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -470,9 +620,24 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.104075 -0.149998 -0.021845" rpy="0 0 0"/>
+        <origin xyz="-0.110037 0.150002 -0.021845" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/femur-996-right.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+      <visual>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -481,11 +646,11 @@
       <inertial>
         <mass value="0.04"/>
         <inertia ixx="0.00000150" ixy="0" ixz="0"
-                 iyy="0.00006060" iyz="0"
-                 izz="0.00006060"/>
+                 iyy="0.00003413" iyz="0"
+                 izz="0.00003413"/>
       </inertial>
       <visual>
-        <origin xyz="-0.150000 -0.099962 -0.006250" rpy="0 0 0"/>
+        <origin xyz="-0.099962 0.150000 -0.006250" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/tibia-996-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -494,9 +659,24 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.150000 -0.099962 -0.006250" rpy="0 0 0"/>
+        <origin xyz="-0.099962 0.150000 -0.006250" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/tibia-996-right.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+      <visual>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -545,7 +725,7 @@
   <joint name="r1_tip_joint" type="fixed">
     <parent link="r1_tibia"/>
     <child  link="r1_tip"/>
-    <origin xyz="0.134000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.100076 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <!-- ─── Leg R2 ──────────────────────────────────────── -->
@@ -571,6 +751,21 @@
           <mesh filename="package://hexapod_v2/coxa-996-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
+      <visual>
+        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
   </link>
 
   <link name="r2_femur">
@@ -581,7 +776,7 @@
                  izz="0.00003400"/>
       </inertial>
       <visual>
-        <origin xyz="-0.104075 -0.149998 -0.021845" rpy="0 0 0"/>
+        <origin xyz="-0.110037 0.150002 -0.021845" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/femur-996-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -590,9 +785,24 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.104075 -0.149998 -0.021845" rpy="0 0 0"/>
+        <origin xyz="-0.110037 0.150002 -0.021845" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/femur-996-right.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+      <visual>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -601,11 +811,11 @@
       <inertial>
         <mass value="0.04"/>
         <inertia ixx="0.00000150" ixy="0" ixz="0"
-                 iyy="0.00006060" iyz="0"
-                 izz="0.00006060"/>
+                 iyy="0.00003413" iyz="0"
+                 izz="0.00003413"/>
       </inertial>
       <visual>
-        <origin xyz="-0.150000 -0.099962 -0.006250" rpy="0 0 0"/>
+        <origin xyz="-0.099962 0.150000 -0.006250" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/tibia-996-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -614,9 +824,24 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.150000 -0.099962 -0.006250" rpy="0 0 0"/>
+        <origin xyz="-0.099962 0.150000 -0.006250" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/tibia-996-right.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+      <visual>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -665,7 +890,7 @@
   <joint name="r2_tip_joint" type="fixed">
     <parent link="r2_tibia"/>
     <child  link="r2_tip"/>
-    <origin xyz="0.134000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.100076 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <!-- ─── Leg R3 ──────────────────────────────────────── -->
@@ -691,6 +916,21 @@
           <mesh filename="package://hexapod_v2/coxa-996-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
+      <visual>
+        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009500 -0.021750 -0.038000" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
   </link>
 
   <link name="r3_femur">
@@ -701,7 +941,7 @@
                  izz="0.00003400"/>
       </inertial>
       <visual>
-        <origin xyz="-0.104075 -0.149998 -0.021845" rpy="0 0 0"/>
+        <origin xyz="-0.110037 0.150002 -0.021845" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/femur-996-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -710,9 +950,24 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.104075 -0.149998 -0.021845" rpy="0 0 0"/>
+        <origin xyz="-0.110037 0.150002 -0.021845" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/femur-996-right.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+      <visual>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -721,11 +976,11 @@
       <inertial>
         <mass value="0.04"/>
         <inertia ixx="0.00000150" ixy="0" ixz="0"
-                 iyy="0.00006060" iyz="0"
-                 izz="0.00006060"/>
+                 iyy="0.00003413" iyz="0"
+                 izz="0.00003413"/>
       </inertial>
       <visual>
-        <origin xyz="-0.150000 -0.099962 -0.006250" rpy="0 0 0"/>
+        <origin xyz="-0.099962 0.150000 -0.006250" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/tibia-996-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
@@ -734,9 +989,24 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="-0.150000 -0.099962 -0.006250" rpy="0 0 0"/>
+        <origin xyz="-0.099962 0.150000 -0.006250" rpy="0 0 -1.570796"/>
         <geometry>
           <mesh filename="package://hexapod_v2/tibia-996-right.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+      <visual>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.7 0.7 0.7 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="-0.009500 -0.038000 0.021750" rpy="-1.5708 0 0"/>
+        <geometry>
+          <mesh filename="package://hexapod_v2/servo-MG996R.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -785,7 +1055,7 @@
   <joint name="r3_tip_joint" type="fixed">
     <parent link="r3_tibia"/>
     <child  link="r3_tip"/>
-    <origin xyz="0.134000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.100076 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
 </robot>
