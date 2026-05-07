@@ -155,6 +155,7 @@ LEGS = [
 # These are millimetres in the source CAD coordinate frames.
 COXA_HIP_AXIS = np.array([3.0, 1.0, 35.0])
 FEMUR_PROX_AXIS = np.array([3.0, 1.0, 35.0])
+TIBIA_PROX_AXIS = np.array([51.757, 0.0, 8.787])
 
 
 def rot_x(angle: float) -> np.ndarray:
@@ -312,8 +313,13 @@ def build_meshes() -> None:
         np.array([FEMUR_PROX_AXIS[0], FEMUR_PROX_AXIS[1], -FEMUR_PROX_AXIS[2]]),
     )
 
-    write_mesh("tibia-right.stl", load_mesh(STEP_DIR / "tibia.step"))
-    mirrored_mesh(STEP_DIR / "tibia.step", "tibia-left.stl", axis=1)
+    feature_aligned_mesh(STEP_DIR / "tibia.step", "tibia-right.stl", np.eye(3), TIBIA_PROX_AXIS)
+    feature_aligned_mesh(
+        STEP_DIR / "tibia.step",
+        "tibia-left.stl",
+        np.diag([1.0, -1.0, 1.0]),
+        np.array([TIBIA_PROX_AXIS[0], -TIBIA_PROX_AXIS[1], TIBIA_PROX_AXIS[2]]),
+    )
 
     # Hip servos are yaw servos: shaft +Z stays aligned with joint +Z. This
     # orientation is the one used by the screw-hole fit above.
@@ -477,9 +483,9 @@ def generate_urdf() -> Path:
             "  </joint>",
             "",
             f'  <joint name="{leg_name}_knee" type="revolute">',
-            f'    <parent link="{leg_name}_femur"/>',
+            f'    <parent link="{leg_name}_knee_servo"/>',
             f'    <child link="{leg_name}_tibia"/>',
-            f'    <origin xyz="{fmt_xyz((FEMUR_LEN, 0.0, 0.0))}" rpy="{fmt_rpy(0.0, 0.0, 0.0)}"/>',
+            f'    <origin xyz="{fmt_xyz((0.0, 0.0, 0.0))}" rpy="{fmt_rpy(0.0, 0.0, 0.0)}"/>',
             '    <axis xyz="0 1 0"/>',
             '    <limit lower="-2.0944" upper="0.5236" effort="2.0" velocity="6.28"/>',
             '    <dynamics damping="0.01" friction="0.05"/>',
