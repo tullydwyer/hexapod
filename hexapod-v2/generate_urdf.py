@@ -245,10 +245,12 @@ _SX =  0.01008   # shaft centre X  in STL frame
 _SY = -0.00318   # shaft centre Y  in STL frame  (negative — offset toward -Y side)
 _SZ =  0.039     # shaft exit Z    in STL frame
 
-# Hip servo: shaft already along +Z in STL.
-# Move mesh so shaft-exit point (_SX, _SY, _SZ) sits at (0,0,0).
-HIP_SERVO_XYZ = f"{-_SX:.6f} {-_SY:.6f} {-_SZ:.6f}"
-HIP_SERVO_RPY = "0 0 0"
+# Hip servo: shaft along +Z in STL.  Apply Rx(π) so body goes ABOVE joint and
+# shaft points DOWN through frame to coxa horn.
+# Rx(π): STL(x,y,z) → (x,−y,−z).  Shaft STL (_SX,_SY,_SZ) → (_SX,−_SY,−_SZ).
+# Offset to bring that to origin: (−_SX, _SY, _SZ)  [note _SY is already negative]
+HIP_SERVO_XYZ = f"{-_SX:.6f} {_SY:.6f} {_SZ:.6f}"
+HIP_SERVO_RPY = "3.141593 0 0"
 
 # Shoulder / knee servos: shaft must point along link +Y (pitch axis).
 # Apply Rx(−π/2):  STL(x, y, z) → link(x, z, −y)
@@ -294,19 +296,21 @@ def generate_urdf():
 
     # ── base_link ─────────────────────────────────────────────────────────────
     body_xyz, body_rpy = estimate_body_mesh_offset()
-    # frame mesh is already centred at origin; small Y/Z offset to match body
+    # Frame: apply Rx(π) to flip right-side up.
+    # Rx(π): (x,y,z)→(x,−y,−z); new centre = (cx,−cy,−cz); offset = (−cx, cy, cz).
     frame_m = load_mesh("frame.stl")
     if frame_m is not None:
         _, _, frame_ctr, _ = bbox(frame_m)
-        frame_xyz = fmt_xyz(-frame_ctr)
+        frame_xyz = fmt_xyz(np.array([-frame_ctr[0], frame_ctr[1], frame_ctr[2]]))
     else:
         frame_xyz = "0 0 0"
+    frame_rpy = "3.141593 0 0"
 
     lines += [
         '  <!-- ─── Body / base_link ─────────────────────────────────────── -->',
         '  <link name="base_link">',
         inertial_box(0.600, 0.170, 0.165, 0.040),
-        mesh_tag("frame.stl",            xyz=frame_xyz, rpy=body_rpy),
+        mesh_tag("frame.stl",            xyz=frame_xyz, rpy=frame_rpy),
         mesh_tag("top-cover2 (a).stl",   xyz=body_xyz,  rpy=body_rpy),
         mesh_tag("servo2040-bottom-cover (a).stl",
                  xyz=body_xyz, rpy=body_rpy),
