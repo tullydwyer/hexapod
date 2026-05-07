@@ -109,12 +109,13 @@ def fmt_rpy(r, p, y):
     return f"{r:.6f} {p:.6f} {y:.6f}"
 
 def mesh_tag(fname, scale="0.001 0.001 0.001", xyz="0 0 0", rpy="0 0 0"):
-    """Return a <visual> + <collision> block referencing the given STL (in mm → m scale)."""
+    """Return a <visual> + <collision> block referencing the given STL (in mm → m scale).
+    Uses relative paths so viewers like LinkForge can resolve them without a ROS install."""
     return f"""\
       <visual>
         <origin xyz="{xyz}" rpy="{rpy}"/>
         <geometry>
-          <mesh filename="package://hexapod_v2/{fname}" scale="{scale}"/>
+          <mesh filename="./{fname}" scale="{scale}"/>
         </geometry>
         <material name="grey">
           <color rgba="0.7 0.7 0.7 1"/>
@@ -123,7 +124,7 @@ def mesh_tag(fname, scale="0.001 0.001 0.001", xyz="0 0 0", rpy="0 0 0"):
       <collision>
         <origin xyz="{xyz}" rpy="{rpy}"/>
         <geometry>
-          <mesh filename="package://hexapod_v2/{fname}" scale="{scale}"/>
+          <mesh filename="./{fname}" scale="{scale}"/>
         </geometry>
       </collision>"""
 
