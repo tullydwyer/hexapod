@@ -41,33 +41,115 @@ TIBIA_LEN = 0.134
 BODY_Z = -0.010
 
 
-def frame_leg(
-    name: str,
-    hip_xy_mm: tuple[float, float],
+# Servo shaft location in hexapod-v2/servo-MG996R.stl, millimetres.
+SERVO_SHAFT = np.array([10.08, -3.18, 39.0])
+
+# MG996R mounting tab hole centers recovered from horizontal circular rings in
+# the servo STL, in the STL's native XY frame. Subtracting SERVO_SHAFT gives
+# the screw-hole rectangle in shaft-local coordinates.
+SERVO_MOUNT_HOLES_NATIVE_XY_MM = np.array(
+    [
+        [-24.110, 1.825],
+        [-24.110, -8.168],
+        [24.110, 1.825],
+        [24.110, -8.168],
+    ]
+)
+SERVO_MOUNT_HOLES_LOCAL_XY_MM = SERVO_MOUNT_HOLES_NATIVE_XY_MM - SERVO_SHAFT[:2]
+SERVO_MOUNT_LOCAL_X_MM = (
+    float(SERVO_MOUNT_HOLES_LOCAL_XY_MM[:, 0].min()),
+    float(SERVO_MOUNT_HOLES_LOCAL_XY_MM[:, 0].max()),
+)
+SERVO_MOUNT_LOCAL_Y_MM = (
+    float(SERVO_MOUNT_HOLES_LOCAL_XY_MM[:, 1].min()),
+    float(SERVO_MOUNT_HOLES_LOCAL_XY_MM[:, 1].max()),
+)
+
+
+def frame_yaw(
+    outer_xy_mm: tuple[float, float],
     inner_xy_mm: tuple[float, float],
+) -> float:
+    outer = np.array(outer_xy_mm, dtype=float)
+    inner = np.array(inner_xy_mm, dtype=float)
+    return math.atan2(*(outer - inner)[::-1])
+
+
+def servo_mount_leg(
+    name: str,
+    outer_xy_mm: tuple[float, float],
+    inner_xy_mm: tuple[float, float],
+    frame_holes_mm: list[tuple[float, float]],
     side: str,
 ) -> tuple[str, tuple[float, float, float], str, float]:
-    hip = np.array(hip_xy_mm, dtype=float)
-    inner = np.array(inner_xy_mm, dtype=float)
-    yaw = math.atan2(*(hip - inner)[::-1])
+    yaw = frame_yaw(outer_xy_mm, inner_xy_mm)
+    axis = np.array([math.cos(yaw), math.sin(yaw)])
+    normal = np.array([-math.sin(yaw), math.cos(yaw)])
+
+    holes = np.array(frame_holes_mm, dtype=float)
+    x_min, x_max = SERVO_MOUNT_LOCAL_X_MM
+    y_min, y_max = SERVO_MOUNT_LOCAL_Y_MM
+
+    along = holes @ axis
+    across = holes @ normal
+    x_mid = (float(along.min()) + float(along.max())) / 2.0
+    y_mid = (float(across.min()) + float(across.max())) / 2.0
+
+    servo_x = np.where(along < x_mid, x_min, x_max)
+    servo_y = np.where(across < y_mid, y_min, y_max)
+    origins = holes - servo_x[:, None] * axis - servo_y[:, None] * normal
+    hip = origins.mean(axis=0)
     return name, (hip[0] * 0.001, hip[1] * 0.001, BODY_Z), side, yaw
 
 
-# Hip centers recovered from the frame STEP's six r=8mm vertical cylinder
-# centers.  Yaw is the frame arm centerline from the inner r=2mm cylinder to
-# the hip cylinder, so the coxa/servo assembly lands on the actual frame holes.
+# Hip origins are solved by matching the MG996R tab-hole rectangle to each
+# frame STEP screw-hole rectangle. Yaw still comes from the frame arm centerline
+# between the inner r=2mm feature and the outer station feature.
 LEGS = [
-    frame_leg("l1", (-76.600, 84.571), (-49.023, 56.994), "left"),
-    frame_leg("l2", (-91.000, -8.029), (-52.000, -8.029), "left"),
-    frame_leg("l3", (-62.547, -94.718), (-34.970, -67.140), "left"),
-    frame_leg("r1", (76.600, 84.571), (49.023, 56.994), "right"),
-    frame_leg("r2", (91.000, -8.029), (52.000, -8.029), "right"),
-    frame_leg("r3", (62.547, -94.718), (34.970, -67.140), "right"),
+    servo_mount_leg(
+        "l1",
+        (-76.600, 84.571),
+        (-49.023, 56.994),
+        [(-76.246, 91.289), (-69.175, 98.360), (-42.305, 57.348), (-35.234, 64.419)],
+        "left",
+    ),
+    servo_mount_leg(
+        "l2",
+        (-91.000, -8.029),
+        (-52.000, -8.029),
+        [(-95.500, -3.029), (-95.500, 6.971), (-47.500, -3.029), (-47.500, 6.971)],
+        "left",
+    ),
+    servo_mount_leg(
+        "l3",
+        (-62.547, -94.718),
+        (-34.970, -67.140),
+        [(-76.224, -87.323), (-69.153, -94.395), (-42.282, -53.382), (-35.211, -60.453)],
+        "left",
+    ),
+    servo_mount_leg(
+        "r1",
+        (76.600, 84.571),
+        (49.023, 56.994),
+        [(35.234, 64.419), (42.305, 57.348), (69.175, 98.360), (76.246, 91.289)],
+        "right",
+    ),
+    servo_mount_leg(
+        "r2",
+        (91.000, -8.029),
+        (52.000, -8.029),
+        [(47.500, -3.029), (47.500, 6.971), (95.500, -3.029), (95.500, 6.971)],
+        "right",
+    ),
+    servo_mount_leg(
+        "r3",
+        (62.547, -94.718),
+        (34.970, -67.140),
+        [(35.211, -60.453), (42.282, -53.382), (69.153, -94.395), (76.224, -87.323)],
+        "right",
+    ),
 ]
 
-
-# Servo shaft location in hexapod-v2/servo-MG996R.stl, millimetres.
-SERVO_SHAFT = np.array([10.08, -3.18, 39.0])
 
 # Feature centers recovered from circular horn geometry in the STEP meshes.
 # These are millimetres in the source CAD coordinate frames.
@@ -233,10 +315,9 @@ def build_meshes() -> None:
     write_mesh("tibia-right.stl", load_mesh(STEP_DIR / "tibia.step"))
     mirrored_mesh(STEP_DIR / "tibia.step", "tibia-left.stl", axis=1)
 
-    # Hip servos are yaw servos: shaft +Z stays aligned with joint +Z. Rotate
-    # only around the shaft so the case is 180 degrees around the hip axis while
-    # the servo body remains below the shaft.
-    servo_mesh("servo-hip-shaft.stl", rot_z(math.pi))
+    # Hip servos are yaw servos: shaft +Z stays aligned with joint +Z. This
+    # orientation is the one used by the screw-hole fit above.
+    servo_mesh("servo-hip-shaft.stl", np.eye(3))
 
     # Limb servos: native shaft +Z becomes joint +Y/-Y, and native body length X
     # becomes vertical Z.  This matches the tall printed coxa/femur servo pockets.
