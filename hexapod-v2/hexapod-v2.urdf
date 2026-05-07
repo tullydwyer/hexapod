@@ -13,13 +13,13 @@
       </inertial>
       <visual>
         <geometry>
-          <mesh filename="./meshes/frame.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/frame-holes-down.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="grey"/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="./meshes/frame.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/frame-holes-down.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
       <visual>
@@ -55,13 +55,13 @@
       </inertial>
       <visual>
         <geometry>
-          <mesh filename="./meshes/servo-hip.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-hip-180-lower.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="grey"/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="./meshes/servo-hip.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-hip-180-lower.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -240,13 +240,13 @@
       </inertial>
       <visual>
         <geometry>
-          <mesh filename="./meshes/servo-hip.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-hip-180-lower.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="grey"/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="./meshes/servo-hip.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-hip-180-lower.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -425,13 +425,13 @@
       </inertial>
       <visual>
         <geometry>
-          <mesh filename="./meshes/servo-hip.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-hip-180-lower.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="grey"/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="./meshes/servo-hip.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-hip-180-lower.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -610,13 +610,13 @@
       </inertial>
       <visual>
         <geometry>
-          <mesh filename="./meshes/servo-hip.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-hip-180-lower.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="grey"/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="./meshes/servo-hip.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-hip-180-lower.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -795,13 +795,13 @@
       </inertial>
       <visual>
         <geometry>
-          <mesh filename="./meshes/servo-hip.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-hip-180-lower.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="grey"/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="./meshes/servo-hip.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-hip-180-lower.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -980,13 +980,13 @@
       </inertial>
       <visual>
         <geometry>
-          <mesh filename="./meshes/servo-hip.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-hip-180-lower.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="grey"/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="./meshes/servo-hip.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-hip-180-lower.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>

@@ -59,6 +59,7 @@ LEGS = [
 
 # Servo shaft location in hexapod-v2/servo-MG996R.stl, millimetres.
 SERVO_SHAFT = np.array([10.08, -3.18, 39.0])
+HIP_SERVO_LOWER_MM = -20.0
 
 
 def rot_x(angle: float) -> np.ndarray:
@@ -69,6 +70,28 @@ def rot_x(angle: float) -> np.ndarray:
             [1.0, 0.0, 0.0],
             [0.0, c, -s],
             [0.0, s, c],
+        ]
+    )
+
+
+def rot_z(angle: float) -> np.ndarray:
+    c = math.cos(angle)
+    s = math.sin(angle)
+    return np.array(
+        [
+            [c, -s, 0.0],
+            [s, c, 0.0],
+            [0.0, 0.0, 1.0],
+        ]
+    )
+
+
+def mirror_z() -> np.ndarray:
+    return np.array(
+        [
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 0.0, -1.0],
         ]
     )
 
@@ -137,9 +160,12 @@ def mirrored_mesh(source: Path, target: str, axis: int) -> None:
     write_mesh(target, transformed_mesh(source, rotation=mirror))
 
 
-def servo_mesh(target: str, rotation: np.ndarray) -> None:
+def servo_mesh(target: str, rotation: np.ndarray, extra_offset: np.ndarray | None = None) -> None:
     shaft = rotation @ SERVO_SHAFT
-    write_mesh(target, transformed_mesh(HERE / "servo-MG996R.stl", rotation=rotation, offset=-shaft))
+    offset = -shaft
+    if extra_offset is not None:
+        offset = offset + extra_offset
+    write_mesh(target, transformed_mesh(HERE / "servo-MG996R.stl", rotation=rotation, offset=offset))
 
 
 def tibia_tip_for(mesh_name: str) -> tuple[float, float, float]:
@@ -153,16 +179,13 @@ def tibia_tip_for(mesh_name: str) -> tuple[float, float, float]:
 
 def build_meshes() -> None:
     MESH_DIR.mkdir(exist_ok=True)
-    for old_mesh in MESH_DIR.glob("*.stl"):
-        old_mesh.unlink()
 
-    centred_mesh(STEP_DIR / "frame.step", "frame.stl", rotation=rot_x(math.pi))
+    centred_mesh(STEP_DIR / "frame.step", "frame-holes-down.stl", rotation=mirror_z())
     centred_mesh(STEP_DIR / "top-cover.step", "top-cover.stl")
 
     top = load_mesh(STEP_DIR / "top-cover.step")
     _, _, top_centre, _ = bounds(top)
     offset_mesh(STEP_DIR / "bottom-cover-flat.step", "bottom-cover-flat.stl", offset=-top_centre)
-    offset_mesh(STEP_DIR / "bottom-cover.step", "bottom-cover.stl", offset=-top_centre)
 
     write_mesh("coxa-left.stl", load_mesh(STEP_DIR / "coxa.step"))
     mirrored_mesh(STEP_DIR / "coxa.step", "coxa-right.stl", axis=1)
@@ -174,8 +197,13 @@ def build_meshes() -> None:
     write_mesh("tibia-right.stl", load_mesh(STEP_DIR / "tibia.step"))
     mirrored_mesh(STEP_DIR / "tibia.step", "tibia-left.stl", axis=1)
 
-    # Hip servo: shaft points down through the frame, body sits above the shaft.
-    servo_mesh("servo-hip.stl", rot_x(math.pi))
+    # Hip servos are yaw servos: their shafts must stay vertical.  This is the
+    # previous outboard pose rotated 180 degrees around the shaft and lowered.
+    servo_mesh(
+        "servo-hip-180-lower.stl",
+        rot_z(math.pi) @ rot_z(math.pi) @ rot_x(math.pi),
+        extra_offset=np.array([0.0, 0.0, HIP_SERVO_LOWER_MM]),
+    )
 
     # Limb servos: native shaft +Z becomes joint +Y/-Y, and native body length X
     # becomes vertical Z.  This matches the tall printed coxa/femur servo pockets.
@@ -259,7 +287,7 @@ def generate_urdf() -> Path:
         0.600,
         (0.170, 0.165, 0.040),
         [
-            mesh_block("frame.stl"),
+            mesh_block("frame-holes-down.stl"),
             mesh_block("top-cover.stl"),
             mesh_block("bottom-cover-flat.stl"),
         ],
@@ -276,7 +304,7 @@ def generate_urdf() -> Path:
         tibia_mesh = f"tibia-{side}.stl"
         limb_servo = f"servo-limb-{side}.stl"
 
-        add_link(lines, f"{leg_name}_hip_servo", 0.055, (0.0542, 0.020, 0.0465), [mesh_block("servo-hip.stl")])
+        add_link(lines, f"{leg_name}_hip_servo", 0.055, (0.0542, 0.020, 0.0465), [mesh_block("servo-hip-180-lower.stl")])
         add_link(lines, f"{leg_name}_coxa", 0.040, (COXA_LEN, 0.030, 0.060), [mesh_block(coxa_mesh)])
         add_link(lines, f"{leg_name}_shoulder_servo", 0.055, (0.0542, 0.020, 0.0465), [mesh_block(limb_servo)])
         add_link(lines, f"{leg_name}_femur", 0.060, (FEMUR_LEN, 0.020, 0.060), [mesh_block(femur_mesh)])
