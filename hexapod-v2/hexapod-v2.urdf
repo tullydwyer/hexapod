@@ -210,19 +210,19 @@
     <dynamics damping="0.01" friction="0.05"/>
   </joint>
 
-  <joint name="l1_knee_servo_joint" type="fixed">
+  <joint name="l1_knee" type="revolute">
     <parent link="l1_femur"/>
     <child link="l1_knee_servo"/>
     <origin xyz="0.080000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
-  </joint>
-
-  <joint name="l1_knee" type="revolute">
-    <parent link="l1_knee_servo"/>
-    <child link="l1_tibia"/>
-    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
     <axis xyz="0 1 0"/>
     <limit lower="-2.0944" upper="0.5236" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
+  </joint>
+
+  <joint name="l1_tibia_mount_joint" type="fixed">
+    <parent link="l1_knee_servo"/>
+    <child link="l1_tibia"/>
+    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <joint name="l1_tip_joint" type="fixed">
@@ -395,19 +395,19 @@
     <dynamics damping="0.01" friction="0.05"/>
   </joint>
 
-  <joint name="l2_knee_servo_joint" type="fixed">
+  <joint name="l2_knee" type="revolute">
     <parent link="l2_femur"/>
     <child link="l2_knee_servo"/>
     <origin xyz="0.080000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
-  </joint>
-
-  <joint name="l2_knee" type="revolute">
-    <parent link="l2_knee_servo"/>
-    <child link="l2_tibia"/>
-    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
     <axis xyz="0 1 0"/>
     <limit lower="-2.0944" upper="0.5236" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
+  </joint>
+
+  <joint name="l2_tibia_mount_joint" type="fixed">
+    <parent link="l2_knee_servo"/>
+    <child link="l2_tibia"/>
+    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <joint name="l2_tip_joint" type="fixed">
@@ -580,19 +580,19 @@
     <dynamics damping="0.01" friction="0.05"/>
   </joint>
 
-  <joint name="l3_knee_servo_joint" type="fixed">
+  <joint name="l3_knee" type="revolute">
     <parent link="l3_femur"/>
     <child link="l3_knee_servo"/>
     <origin xyz="0.080000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
-  </joint>
-
-  <joint name="l3_knee" type="revolute">
-    <parent link="l3_knee_servo"/>
-    <child link="l3_tibia"/>
-    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
     <axis xyz="0 1 0"/>
     <limit lower="-2.0944" upper="0.5236" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
+  </joint>
+
+  <joint name="l3_tibia_mount_joint" type="fixed">
+    <parent link="l3_knee_servo"/>
+    <child link="l3_tibia"/>
+    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <joint name="l3_tip_joint" type="fixed">
@@ -765,19 +765,19 @@
     <dynamics damping="0.01" friction="0.05"/>
   </joint>
 
-  <joint name="r1_knee_servo_joint" type="fixed">
+  <joint name="r1_knee" type="revolute">
     <parent link="r1_femur"/>
     <child link="r1_knee_servo"/>
     <origin xyz="0.080000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
-  </joint>
-
-  <joint name="r1_knee" type="revolute">
-    <parent link="r1_knee_servo"/>
-    <child link="r1_tibia"/>
-    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
     <axis xyz="0 1 0"/>
     <limit lower="-2.0944" upper="0.5236" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
+  </joint>
+
+  <joint name="r1_tibia_mount_joint" type="fixed">
+    <parent link="r1_knee_servo"/>
+    <child link="r1_tibia"/>
+    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <joint name="r1_tip_joint" type="fixed">
@@ -950,19 +950,19 @@
     <dynamics damping="0.01" friction="0.05"/>
   </joint>
 
-  <joint name="r2_knee_servo_joint" type="fixed">
+  <joint name="r2_knee" type="revolute">
     <parent link="r2_femur"/>
     <child link="r2_knee_servo"/>
     <origin xyz="0.080000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
-  </joint>
-
-  <joint name="r2_knee" type="revolute">
-    <parent link="r2_knee_servo"/>
-    <child link="r2_tibia"/>
-    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
     <axis xyz="0 1 0"/>
     <limit lower="-2.0944" upper="0.5236" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
+  </joint>
+
+  <joint name="r2_tibia_mount_joint" type="fixed">
+    <parent link="r2_knee_servo"/>
+    <child link="r2_tibia"/>
+    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <joint name="r2_tip_joint" type="fixed">
@@ -1135,19 +1135,19 @@
     <dynamics damping="0.01" friction="0.05"/>
   </joint>
 
-  <joint name="r3_knee_servo_joint" type="fixed">
+  <joint name="r3_knee" type="revolute">
     <parent link="r3_femur"/>
     <child link="r3_knee_servo"/>
     <origin xyz="0.080000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
-  </joint>
-
-  <joint name="r3_knee" type="revolute">
-    <parent link="r3_knee_servo"/>
-    <child link="r3_tibia"/>
-    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
     <axis xyz="0 1 0"/>
     <limit lower="-2.0944" upper="0.5236" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
+  </joint>
+
+  <joint name="r3_tibia_mount_joint" type="fixed">
+    <parent link="r3_knee_servo"/>
+    <child link="r3_tibia"/>
+    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <joint name="r3_tip_joint" type="fixed">
