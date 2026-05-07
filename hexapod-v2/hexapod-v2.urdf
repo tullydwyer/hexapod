@@ -183,13 +183,13 @@
   <joint name="l1_hip_servo_joint" type="fixed">
     <parent link="base_link"/>
     <child link="l1_hip_servo"/>
-    <origin xyz="-0.062862 0.084988 -0.010000" rpy="0.000000 0.000000 2.356194"/>
+    <origin xyz="-0.062862 0.084988 -0.008000" rpy="0.000000 0.000000 2.356194"/>
   </joint>
 
   <joint name="l1_hip" type="revolute">
     <parent link="base_link"/>
     <child link="l1_coxa"/>
-    <origin xyz="-0.062862 0.084988 -0.010000" rpy="0.000000 0.000000 2.356194"/>
+    <origin xyz="-0.062862 0.084988 -0.008000" rpy="0.000000 0.000000 2.356194"/>
     <axis xyz="0 0 1"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
@@ -368,13 +368,13 @@
   <joint name="l2_hip_servo_joint" type="fixed">
     <parent link="base_link"/>
     <child link="l2_hip_servo"/>
-    <origin xyz="-0.081580 0.001980 -0.010000" rpy="0.000000 0.000000 3.141593"/>
+    <origin xyz="-0.081580 0.001980 -0.008000" rpy="0.000000 0.000000 3.141593"/>
   </joint>
 
   <joint name="l2_hip" type="revolute">
     <parent link="base_link"/>
     <child link="l2_coxa"/>
-    <origin xyz="-0.081580 0.001980 -0.010000" rpy="0.000000 0.000000 3.141593"/>
+    <origin xyz="-0.081580 0.001980 -0.008000" rpy="0.000000 0.000000 3.141593"/>
     <axis xyz="0 0 1"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
@@ -553,13 +553,13 @@
   <joint name="l3_hip_servo_joint" type="fixed">
     <parent link="base_link"/>
     <child link="l3_hip_servo"/>
-    <origin xyz="-0.062851 -0.081010 -0.010000" rpy="0.000000 0.000000 -2.356176"/>
+    <origin xyz="-0.062851 -0.081010 -0.008000" rpy="0.000000 0.000000 -2.356176"/>
   </joint>
 
   <joint name="l3_hip" type="revolute">
     <parent link="base_link"/>
     <child link="l3_coxa"/>
-    <origin xyz="-0.062851 -0.081010 -0.010000" rpy="0.000000 0.000000 -2.356176"/>
+    <origin xyz="-0.062851 -0.081010 -0.008000" rpy="0.000000 0.000000 -2.356176"/>
     <axis xyz="0 0 1"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
@@ -738,13 +738,13 @@
   <joint name="r1_hip_servo_joint" type="fixed">
     <parent link="base_link"/>
     <child link="r1_hip_servo"/>
-    <origin xyz="0.062874 0.084976 -0.010000" rpy="0.000000 0.000000 0.785398"/>
+    <origin xyz="0.062874 0.084976 -0.008000" rpy="0.000000 0.000000 0.785398"/>
   </joint>
 
   <joint name="r1_hip" type="revolute">
     <parent link="base_link"/>
     <child link="r1_coxa"/>
-    <origin xyz="0.062874 0.084976 -0.010000" rpy="0.000000 0.000000 0.785398"/>
+    <origin xyz="0.062874 0.084976 -0.008000" rpy="0.000000 0.000000 0.785398"/>
     <axis xyz="0 0 1"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
@@ -923,13 +923,13 @@
   <joint name="r2_hip_servo_joint" type="fixed">
     <parent link="base_link"/>
     <child link="r2_hip_servo"/>
-    <origin xyz="0.081580 0.001962 -0.010000" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.081580 0.001962 -0.008000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <joint name="r2_hip" type="revolute">
     <parent link="base_link"/>
     <child link="r2_coxa"/>
-    <origin xyz="0.081580 0.001962 -0.010000" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.081580 0.001962 -0.008000" rpy="0.000000 0.000000 0.000000"/>
     <axis xyz="0 0 1"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
@@ -1108,13 +1108,13 @@
   <joint name="r3_hip_servo_joint" type="fixed">
     <parent link="base_link"/>
     <child link="r3_hip_servo"/>
-    <origin xyz="0.062839 -0.081022 -0.010000" rpy="0.000000 0.000000 -0.785416"/>
+    <origin xyz="0.062839 -0.081022 -0.008000" rpy="0.000000 0.000000 -0.785416"/>
   </joint>
 
   <joint name="r3_hip" type="revolute">
     <parent link="base_link"/>
     <child link="r3_coxa"/>
-    <origin xyz="0.062839 -0.081022 -0.010000" rpy="0.000000 0.000000 -0.785416"/>
+    <origin xyz="0.062839 -0.081022 -0.008000" rpy="0.000000 0.000000 -0.785416"/>
     <axis xyz="0 0 1"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
