@@ -19,7 +19,6 @@ Coordinate convention:
 from __future__ import annotations
 
 import math
-import shutil
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -59,7 +58,11 @@ LEGS = [
 
 # Servo shaft location in hexapod-v2/servo-MG996R.stl, millimetres.
 SERVO_SHAFT = np.array([10.08, -3.18, 39.0])
-HIP_SERVO_LOWER_MM = -20.0
+
+# Feature centers recovered from circular horn geometry in the STEP meshes.
+# These are millimetres in the source CAD coordinate frames.
+COXA_HIP_AXIS = np.array([3.0, 1.0, 35.0])
+FEMUR_PROX_AXIS = np.array([3.0, 1.0, 35.0])
 
 
 def rot_x(angle: float) -> np.ndarray:
@@ -143,6 +146,19 @@ def transformed_mesh(source: Path, rotation: np.ndarray | None = None, offset: n
     return mesh
 
 
+def feature_aligned_mesh(
+    source: Path,
+    target: str,
+    rotation: np.ndarray,
+    pivot: np.ndarray,
+) -> None:
+    mesh = load_mesh(source)
+    mesh.vertices = (rotation @ (np.asarray(mesh.vertices) - pivot).T).T
+    if np.linalg.det(rotation) < 0:
+        mesh.invert()
+    write_mesh(target, mesh)
+
+
 def centred_mesh(source: Path, target: str, rotation: np.ndarray | None = None) -> None:
     mesh = transformed_mesh(source, rotation=rotation)
     _, _, centre, _ = bounds(mesh)
@@ -187,23 +203,30 @@ def build_meshes() -> None:
     _, _, top_centre, _ = bounds(top)
     offset_mesh(STEP_DIR / "bottom-cover-flat.step", "bottom-cover-flat.stl", offset=-top_centre)
 
-    write_mesh("coxa-left.stl", load_mesh(STEP_DIR / "coxa.step"))
-    mirrored_mesh(STEP_DIR / "coxa.step", "coxa-right.stl", axis=1)
+    feature_aligned_mesh(STEP_DIR / "coxa.step", "coxa-left.stl", np.eye(3), COXA_HIP_AXIS)
+    feature_aligned_mesh(
+        STEP_DIR / "coxa.step",
+        "coxa-right.stl",
+        np.diag([1.0, -1.0, 1.0]),
+        np.array([COXA_HIP_AXIS[0], -COXA_HIP_AXIS[1], COXA_HIP_AXIS[2]]),
+    )
 
-    write_mesh("femur-right.stl", load_mesh(STEP_DIR / "femur.step"))
-    # The repository's left femur STL is the right femur mirrored through Z.
-    mirrored_mesh(STEP_DIR / "femur.step", "femur-left.stl", axis=2)
+    femur_to_link = rot_x(-math.pi / 2)
+    feature_aligned_mesh(STEP_DIR / "femur.step", "femur-right.stl", femur_to_link, FEMUR_PROX_AXIS)
+    feature_aligned_mesh(
+        STEP_DIR / "femur.step",
+        "femur-left.stl",
+        femur_to_link @ np.diag([1.0, 1.0, -1.0]),
+        np.array([FEMUR_PROX_AXIS[0], FEMUR_PROX_AXIS[1], -FEMUR_PROX_AXIS[2]]),
+    )
 
     write_mesh("tibia-right.stl", load_mesh(STEP_DIR / "tibia.step"))
     mirrored_mesh(STEP_DIR / "tibia.step", "tibia-left.stl", axis=1)
 
-    # Hip servos are yaw servos: their shafts must stay vertical.  This is the
-    # previous outboard pose rotated 180 degrees around the shaft and lowered.
-    servo_mesh(
-        "servo-hip-180-lower.stl",
-        rot_z(math.pi) @ rot_z(math.pi) @ rot_x(math.pi),
-        extra_offset=np.array([0.0, 0.0, HIP_SERVO_LOWER_MM]),
-    )
+    # Hip servos are yaw servos: shaft +Z stays aligned with joint +Z. Rotate
+    # only around the shaft so the case is 180 degrees around the hip axis while
+    # the servo body remains below the shaft.
+    servo_mesh("servo-hip-shaft.stl", rot_z(math.pi))
 
     # Limb servos: native shaft +Z becomes joint +Y/-Y, and native body length X
     # becomes vertical Z.  This matches the tall printed coxa/femur servo pockets.
@@ -304,7 +327,7 @@ def generate_urdf() -> Path:
         tibia_mesh = f"tibia-{side}.stl"
         limb_servo = f"servo-limb-{side}.stl"
 
-        add_link(lines, f"{leg_name}_hip_servo", 0.055, (0.0542, 0.020, 0.0465), [mesh_block("servo-hip-180-lower.stl")])
+        add_link(lines, f"{leg_name}_hip_servo", 0.055, (0.0542, 0.020, 0.0465), [mesh_block("servo-hip-shaft.stl")])
         add_link(lines, f"{leg_name}_coxa", 0.040, (COXA_LEN, 0.030, 0.060), [mesh_block(coxa_mesh)])
         add_link(lines, f"{leg_name}_shoulder_servo", 0.055, (0.0542, 0.020, 0.0465), [mesh_block(limb_servo)])
         add_link(lines, f"{leg_name}_femur", 0.060, (FEMUR_LEN, 0.020, 0.060), [mesh_block(femur_mesh)])
