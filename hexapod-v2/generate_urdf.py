@@ -58,14 +58,27 @@ SERVO_MOUNT_HOLES_NATIVE_XY_MM = np.array(
     ]
 )
 SERVO_MOUNT_HOLES_LOCAL_XY_MM = SERVO_MOUNT_HOLES_NATIVE_XY_MM - SERVO_SHAFT[:2]
-SERVO_MOUNT_LOCAL_X_MM = (
-    float(SERVO_MOUNT_HOLES_LOCAL_XY_MM[:, 0].min()),
-    float(SERVO_MOUNT_HOLES_LOCAL_XY_MM[:, 0].max()),
-)
-SERVO_MOUNT_LOCAL_Y_MM = (
-    float(SERVO_MOUNT_HOLES_LOCAL_XY_MM[:, 1].min()),
-    float(SERVO_MOUNT_HOLES_LOCAL_XY_MM[:, 1].max()),
-)
+
+
+def servo_mount_origin_2d(
+    frame_holes_mm: np.ndarray | list[tuple[float, float]],
+    servo_holes_mm: np.ndarray | list[tuple[float, float]],
+) -> np.ndarray:
+    frame_holes = np.array(frame_holes_mm, dtype=float)
+    servo_holes = np.array(servo_holes_mm, dtype=float)
+
+    frame_mid = (frame_holes.min(axis=0) + frame_holes.max(axis=0)) / 2.0
+    servo_min = servo_holes.min(axis=0)
+    servo_max = servo_holes.max(axis=0)
+
+    servo_xy = np.column_stack(
+        [
+            np.where(frame_holes[:, 0] < frame_mid[0], servo_min[0], servo_max[0]),
+            np.where(frame_holes[:, 1] < frame_mid[1], servo_min[1], servo_max[1]),
+        ]
+    )
+    origins = frame_holes - servo_xy
+    return origins.mean(axis=0)
 
 
 def frame_yaw(
@@ -89,18 +102,9 @@ def servo_mount_leg(
     normal = np.array([-math.sin(yaw), math.cos(yaw)])
 
     holes = np.array(frame_holes_mm, dtype=float)
-    x_min, x_max = SERVO_MOUNT_LOCAL_X_MM
-    y_min, y_max = SERVO_MOUNT_LOCAL_Y_MM
-
-    along = holes @ axis
-    across = holes @ normal
-    x_mid = (float(along.min()) + float(along.max())) / 2.0
-    y_mid = (float(across.min()) + float(across.max())) / 2.0
-
-    servo_x = np.where(along < x_mid, x_min, x_max)
-    servo_y = np.where(across < y_mid, y_min, y_max)
-    origins = holes - servo_x[:, None] * axis - servo_y[:, None] * normal
-    hip = origins.mean(axis=0)
+    frame_local = np.column_stack([holes @ axis, holes @ normal])
+    hip_local = servo_mount_origin_2d(frame_local, SERVO_MOUNT_HOLES_LOCAL_XY_MM)
+    hip = hip_local[0] * axis + hip_local[1] * normal
     return name, (hip[0] * 0.001, hip[1] * 0.001, BODY_Z), side, yaw
 
 
@@ -159,6 +163,16 @@ COXA_HIP_AXIS = np.array([3.0, 1.0, 35.0])
 FEMUR_PROX_AXIS = np.array([3.0, 1.0, 35.0])
 TIBIA_PROX_AXIS = np.array([51.757, 0.0, 8.787])
 
+# MG996R shoulder tab-hole centers in coxa.step, in source CAD XZ.
+COXA_SHOULDER_MOUNT_HOLES_STEP_XZ_MM = np.array(
+    [
+        [41.0, -11.5],
+        [51.0, -11.5],
+        [41.0, 36.5],
+        [51.0, 36.5],
+    ]
+)
+
 
 def rot_x(angle: float) -> np.ndarray:
     c = math.cos(angle)
@@ -204,6 +218,44 @@ def mirror_z() -> np.ndarray:
             [0.0, 0.0, -1.0],
         ]
     )
+
+
+# Limb servos: native shaft +Z becomes joint +Y/-Y, and native body length X
+# becomes vertical Z. Keeping both sides' native +X downward aligns the MG996R
+# tab holes to the printed coxa shoulder pocket.
+LIMB_SERVO_ROTATIONS = {
+    "right": np.array(
+        [
+            [0.0, -1.0, 0.0],
+            [0.0, 0.0, 1.0],
+            [-1.0, 0.0, 0.0],
+        ]
+    ),
+    "left": np.array(
+        [
+            [0.0, 1.0, 0.0],
+            [0.0, 0.0, -1.0],
+            [-1.0, 0.0, 0.0],
+        ]
+    ),
+}
+
+
+def rotated_servo_mount_holes_xz(rotation: np.ndarray) -> np.ndarray:
+    mount_holes = np.column_stack(
+        [SERVO_MOUNT_HOLES_LOCAL_XY_MM, np.zeros(len(SERVO_MOUNT_HOLES_LOCAL_XY_MM))]
+    )
+    return (rotation @ mount_holes.T).T[:, [0, 2]]
+
+
+def shoulder_mount_origin(side: str) -> tuple[float, float, float]:
+    coxa_holes = COXA_SHOULDER_MOUNT_HOLES_STEP_XZ_MM - COXA_HIP_AXIS[[0, 2]]
+    coxa_holes[:, 1] += COXA_VISUAL_RISE_MM
+    origin_xz = servo_mount_origin_2d(
+        coxa_holes,
+        rotated_servo_mount_holes_xz(LIMB_SERVO_ROTATIONS[side]),
+    )
+    return (origin_xz[0] * 0.001, 0.0, origin_xz[1] * 0.001)
 
 
 def load_mesh(path: Path) -> trimesh.Trimesh:
@@ -359,24 +411,8 @@ def build_meshes() -> None:
         extra_offset=np.array([0.0, 0.0, -HIP_SERVO_VISUAL_DROP_MM]),
     )
 
-    # Limb servos: native shaft +Z becomes joint +Y/-Y, and native body length X
-    # becomes vertical Z.  This matches the tall printed coxa/femur servo pockets.
-    limb_right = np.array(
-        [
-            [0.0, 1.0, 0.0],
-            [0.0, 0.0, 1.0],
-            [1.0, 0.0, 0.0],
-        ]
-    )
-    limb_left = np.array(
-        [
-            [0.0, 1.0, 0.0],
-            [0.0, 0.0, -1.0],
-            [-1.0, 0.0, 0.0],
-        ]
-    )
-    servo_mesh("servo-limb-right.stl", limb_right)
-    servo_mesh("servo-limb-left.stl", limb_left)
+    servo_mesh("servo-limb-right.stl", LIMB_SERVO_ROTATIONS["right"])
+    servo_mesh("servo-limb-left.stl", LIMB_SERVO_ROTATIONS["left"])
 
 
 def fmt_xyz(values: tuple[float, float, float] | np.ndarray) -> str:
@@ -457,6 +493,7 @@ def generate_urdf() -> Path:
         femur_mesh = f"femur-{side}.stl"
         tibia_mesh = f"tibia-{side}.stl"
         limb_servo = f"servo-limb-{side}.stl"
+        shoulder_xyz = shoulder_mount_origin(side)
 
         add_link(lines, f"{leg_name}_hip_servo", 0.055, (0.0542, 0.020, 0.0465), [mesh_block("servo-hip-shaft.stl")])
         add_link(lines, f"{leg_name}_coxa", 0.040, (COXA_LEN, 0.030, 0.060), [mesh_block(coxa_mesh)])
@@ -498,13 +535,13 @@ def generate_urdf() -> Path:
             f'  <joint name="{leg_name}_shoulder_servo_joint" type="fixed">',
             f'    <parent link="{leg_name}_coxa"/>',
             f'    <child link="{leg_name}_shoulder_servo"/>',
-            f'    <origin xyz="{fmt_xyz((COXA_LEN, 0.0, 0.0))}" rpy="{fmt_rpy(0.0, 0.0, 0.0)}"/>',
+            f'    <origin xyz="{fmt_xyz(shoulder_xyz)}" rpy="{fmt_rpy(0.0, 0.0, 0.0)}"/>',
             "  </joint>",
             "",
             f'  <joint name="{leg_name}_shoulder" type="revolute">',
             f'    <parent link="{leg_name}_coxa"/>',
             f'    <child link="{leg_name}_femur"/>',
-            f'    <origin xyz="{fmt_xyz((COXA_LEN, 0.0, 0.0))}" rpy="{fmt_rpy(0.0, 0.0, 0.0)}"/>',
+            f'    <origin xyz="{fmt_xyz(shoulder_xyz)}" rpy="{fmt_rpy(0.0, 0.0, 0.0)}"/>',
             '    <axis xyz="0 1 0"/>',
             '    <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>',
             '    <dynamics damping="0.01" friction="0.05"/>',
