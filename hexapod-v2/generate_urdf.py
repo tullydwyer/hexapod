@@ -455,7 +455,7 @@ def build_meshes() -> None:
         extra_offset=coxa_visual_offset,
     )
 
-    femur_to_link = rot_x(-math.pi / 2)
+    femur_to_link = rot_x(math.pi) @ rot_x(-math.pi / 2)
     feature_aligned_mesh(CHIPO_DIR / "femur-996.stl", "femur-right.stl", femur_to_link, FEMUR_PROX_AXIS)
     feature_aligned_mesh(
         CHIPO_DIR / "femur-996.stl",
