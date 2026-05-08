@@ -40,6 +40,7 @@ TIBIA_LEN = 0.134
 
 BODY_Z = -0.008
 HIP_SERVO_VISUAL_DROP_MM = 10.0
+COXA_VISUAL_RISE_MM = 33.0
 
 
 # Servo shaft location in hexapod-v2/servo-MG996R.stl, millimetres.
@@ -257,9 +258,13 @@ def feature_aligned_mesh(
     target: str,
     rotation: np.ndarray,
     pivot: np.ndarray,
+    extra_offset: np.ndarray | None = None,
 ) -> None:
     mesh = load_mesh(source)
-    mesh.vertices = (rotation @ (np.asarray(mesh.vertices) - pivot).T).T
+    vertices = (rotation @ (np.asarray(mesh.vertices) - pivot).T).T
+    if extra_offset is not None:
+        vertices = vertices + extra_offset
+    mesh.vertices = vertices
     if np.linalg.det(rotation) < 0:
         mesh.invert()
     write_mesh(target, mesh)
@@ -309,12 +314,20 @@ def build_meshes() -> None:
     _, _, top_centre, _ = bounds(top)
     offset_mesh(STEP_DIR / "bottom-cover-flat.step", "bottom-cover-flat.stl", offset=-top_centre)
 
-    feature_aligned_mesh(STEP_DIR / "coxa.step", "coxa-left.stl", np.eye(3), COXA_HIP_AXIS)
+    coxa_visual_offset = np.array([0.0, 0.0, COXA_VISUAL_RISE_MM])
+    feature_aligned_mesh(
+        STEP_DIR / "coxa.step",
+        "coxa-left.stl",
+        np.eye(3),
+        COXA_HIP_AXIS,
+        extra_offset=coxa_visual_offset,
+    )
     feature_aligned_mesh(
         STEP_DIR / "coxa.step",
         "coxa-right.stl",
         np.diag([1.0, -1.0, 1.0]),
         np.array([COXA_HIP_AXIS[0], -COXA_HIP_AXIS[1], COXA_HIP_AXIS[2]]),
+        extra_offset=coxa_visual_offset,
     )
 
     femur_to_link = rot_x(-math.pi / 2)
