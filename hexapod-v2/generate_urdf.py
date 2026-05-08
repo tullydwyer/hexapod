@@ -252,10 +252,12 @@ LIMB_SERVO_ROTATIONS = {
     ),
 }
 
-# Knee servos use the same X/Z mounting-hole alignment as the coxa shoulder
-# servos, but face the opposite side of the femur mount.
+# Knee servos need the limb mounting-hole frame rotated end-for-end so the
+# output spline sits on the opposite end of the case while the same attachment
+# side stays against the tibia mount. tibia_mount_pivot() then keeps the tab
+# holes aligned to the printed mount.
 KNEE_SERVO_ROTATIONS = {
-    side: rot_z(math.pi) @ rotation
+    side: rot_y(math.pi) @ rot_z(math.pi) @ rotation
     for side, rotation in LIMB_SERVO_ROTATIONS.items()
 }
 SHOULDER_SERVO_ROTATIONS = {
