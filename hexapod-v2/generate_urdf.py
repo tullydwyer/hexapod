@@ -259,7 +259,7 @@ KNEE_SERVO_ROTATIONS = {
     for side, rotation in LIMB_SERVO_ROTATIONS.items()
 }
 SHOULDER_SERVO_ROTATIONS = {
-    side: rot_x(math.pi) @ rotation
+    side: rot_z(math.pi) @ rotation
     for side, rotation in LIMB_SERVO_ROTATIONS.items()
 }
 
@@ -480,11 +480,11 @@ def build_meshes() -> None:
     servo_mesh("servo-limb-right.stl", LIMB_SERVO_ROTATIONS["right"])
     servo_mesh("servo-limb-left.stl", LIMB_SERVO_ROTATIONS["left"])
     servo_mesh(
-        "servo-shoulder-rot180-right.stl",
+        "servo-shoulder-z180-right.stl",
         SHOULDER_SERVO_ROTATIONS["right"],
     )
     servo_mesh(
-        "servo-shoulder-rot180-left.stl",
+        "servo-shoulder-z180-left.stl",
         SHOULDER_SERVO_ROTATIONS["left"],
     )
     servo_mesh(
@@ -574,7 +574,7 @@ def generate_urdf() -> Path:
         coxa_mesh = f"coxa-{side}.stl"
         femur_mesh = f"femur-{side}.stl"
         tibia_mesh = f"tibia-{side}.stl"
-        shoulder_servo = f"servo-shoulder-rot180-{side}.stl"
+        shoulder_servo = f"servo-shoulder-z180-{side}.stl"
         knee_servo = f"servo-knee-{side}.stl"
         shoulder_xyz = shoulder_mount_origin(side)
         knee_xyz = (FEMUR_LEN, 0.0, 0.0)
