@@ -293,8 +293,8 @@ KNEE_SERVO_SLIDE_MM = {
     "right": np.array([0.0, -29.0, 0.0]),
 }
 TIBIA_SLIDE_MM = {
-    "left": np.array([0.0, 0.0, 0.0]),
-    "right": np.array([0.0, 0.0, 0.0]),
+    "left": np.array([0.0, 6.0, 0.0]),
+    "right": np.array([0.0, -6.0, 0.0]),
 }
 FEMUR_SHOULDER_INSET_MM = {
     "left": np.array([0.0, -9.0, 0.0]),
