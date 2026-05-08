@@ -173,6 +173,17 @@ COXA_SHOULDER_MOUNT_HOLES_STEP_XZ_MM = np.array(
     ]
 )
 
+# MG996R knee tab-hole centers in tibia.step, in source CAD XZ.  The duplicate
+# y=1.5/y=9.5 rings share these XZ centers.
+TIBIA_KNEE_MOUNT_HOLES_STEP_XZ_MM = np.array(
+    [
+        [28.515, -29.801],
+        [36.176, -36.229],
+        [59.369, 6.969],
+        [67.030, 0.541],
+    ]
+)
+
 
 def rot_x(angle: float) -> np.ndarray:
     c = math.cos(angle)
@@ -241,11 +252,42 @@ LIMB_SERVO_ROTATIONS = {
 }
 
 
+def tibia_to_servo_base_rotation() -> np.ndarray:
+    long_axis = TIBIA_KNEE_MOUNT_HOLES_STEP_XZ_MM[2] - TIBIA_KNEE_MOUNT_HOLES_STEP_XZ_MM[0]
+    return rot_y(math.atan2(-long_axis[0], long_axis[1]))
+
+
+TIBIA_TO_SERVO_BASE_ROTATION = tibia_to_servo_base_rotation()
+TIBIA_TO_SERVO_ROTATIONS = {
+    "right": TIBIA_TO_SERVO_BASE_ROTATION @ np.diag([1.0, -1.0, 1.0]),
+    "left": TIBIA_TO_SERVO_BASE_ROTATION,
+}
+
+
+def points_xz_to_xyz(points_xz: np.ndarray) -> np.ndarray:
+    return np.column_stack([points_xz[:, 0], np.zeros(len(points_xz)), points_xz[:, 1]])
+
+
 def rotated_servo_mount_holes_xz(rotation: np.ndarray) -> np.ndarray:
     mount_holes = np.column_stack(
         [SERVO_MOUNT_HOLES_LOCAL_XY_MM, np.zeros(len(SERVO_MOUNT_HOLES_LOCAL_XY_MM))]
     )
     return (rotation @ mount_holes.T).T[:, [0, 2]]
+
+
+def mount_aligned_pivot(
+    step_holes_xz: np.ndarray,
+    part_rotation: np.ndarray,
+    servo_rotation: np.ndarray,
+    initial_pivot: np.ndarray,
+) -> np.ndarray:
+    step_holes = points_xz_to_xyz(step_holes_xz)
+    rotated_holes_xz = (part_rotation @ (step_holes - initial_pivot).T).T[:, [0, 2]]
+    mount_offset_xz = servo_mount_origin_2d(
+        rotated_holes_xz,
+        rotated_servo_mount_holes_xz(servo_rotation),
+    )
+    return initial_pivot + part_rotation.T @ np.array([mount_offset_xz[0], 0.0, mount_offset_xz[1]])
 
 
 def shoulder_mount_origin(side: str) -> tuple[float, float, float]:
@@ -256,6 +298,15 @@ def shoulder_mount_origin(side: str) -> tuple[float, float, float]:
         rotated_servo_mount_holes_xz(LIMB_SERVO_ROTATIONS[side]),
     )
     return (origin_xz[0] * 0.001, 0.0, origin_xz[1] * 0.001)
+
+
+def tibia_mount_pivot(side: str) -> np.ndarray:
+    return mount_aligned_pivot(
+        TIBIA_KNEE_MOUNT_HOLES_STEP_XZ_MM,
+        TIBIA_TO_SERVO_ROTATIONS[side],
+        LIMB_SERVO_ROTATIONS[side],
+        TIBIA_PROX_AXIS,
+    )
 
 
 def load_mesh(path: Path) -> trimesh.Trimesh:
@@ -391,16 +442,19 @@ def build_meshes() -> None:
         np.array([FEMUR_PROX_AXIS[0], FEMUR_PROX_AXIS[1], -FEMUR_PROX_AXIS[2]]),
     )
 
-    # Rotate the tibia mounting face 180 degrees without flipping the leg
-    # upside down.  The proximal shaft remains on the knee servo origin, while
-    # the foot stays below the body in link-local Z.
-    tibia_to_servo = rot_z(math.pi)
-    feature_aligned_mesh(STEP_DIR / "tibia.step", "tibia-right.stl", tibia_to_servo, TIBIA_PROX_AXIS)
+    # Align the tibia knee-end MG996R tab holes to the knee servo while keeping
+    # the foot below the body in link-local Z.
+    feature_aligned_mesh(
+        STEP_DIR / "tibia.step",
+        "tibia-right.stl",
+        TIBIA_TO_SERVO_ROTATIONS["right"],
+        tibia_mount_pivot("right"),
+    )
     feature_aligned_mesh(
         STEP_DIR / "tibia.step",
         "tibia-left.stl",
-        tibia_to_servo @ np.diag([1.0, -1.0, 1.0]),
-        np.array([TIBIA_PROX_AXIS[0], -TIBIA_PROX_AXIS[1], TIBIA_PROX_AXIS[2]]),
+        TIBIA_TO_SERVO_ROTATIONS["left"],
+        tibia_mount_pivot("left"),
     )
 
     # Hip servos are yaw servos: shaft exits downward through the frame pocket.
