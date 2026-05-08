@@ -266,6 +266,7 @@ SHOULDER_SERVO_SLIDE_MM = {
     "left": np.array([0.0, 20.314, 0.0]),
     "right": np.array([0.0, -20.314, 0.0]),
 }
+FEMUR_SHOULDER_INSET_MM = np.array([0.0, 8.0, 0.0])
 
 
 def tibia_to_servo_base_rotation() -> np.ndarray:
@@ -314,6 +315,11 @@ def shoulder_mount_origin(side: str) -> tuple[float, float, float]:
         rotated_servo_mount_holes_xz(SHOULDER_SERVO_ROTATIONS[side]),
     )
     return (origin_xz[0] * 0.001, 0.0, origin_xz[1] * 0.001)
+
+
+def femur_shoulder_origin(side: str) -> tuple[float, float, float]:
+    origin = np.array(shoulder_mount_origin(side)) + FEMUR_SHOULDER_INSET_MM * 0.001
+    return tuple(origin.tolist())
 
 
 def tibia_mount_pivot(side: str) -> np.ndarray:
@@ -582,7 +588,8 @@ def generate_urdf() -> Path:
         tibia_mesh = f"tibia-{side}.stl"
         shoulder_servo = f"servo-shoulder-z180-slid-{side}.stl"
         knee_servo = f"servo-knee-{side}.stl"
-        shoulder_xyz = shoulder_mount_origin(side)
+        shoulder_servo_xyz = shoulder_mount_origin(side)
+        shoulder_xyz = femur_shoulder_origin(side)
         knee_xyz = (FEMUR_LEN, 0.0, 0.0)
 
         add_link(lines, f"{leg_name}_hip_servo", 0.055, (0.0542, 0.020, 0.0465), [mesh_block("servo-hip-shaft.stl")])
@@ -625,7 +632,7 @@ def generate_urdf() -> Path:
             f'  <joint name="{leg_name}_shoulder_servo_joint" type="fixed">',
             f'    <parent link="{leg_name}_coxa"/>',
             f'    <child link="{leg_name}_shoulder_servo"/>',
-            f'    <origin xyz="{fmt_xyz(shoulder_xyz)}" rpy="{fmt_rpy(0.0, 0.0, 0.0)}"/>',
+            f'    <origin xyz="{fmt_xyz(shoulder_servo_xyz)}" rpy="{fmt_rpy(0.0, 0.0, 0.0)}"/>',
             "  </joint>",
             "",
             f'  <joint name="{leg_name}_shoulder" type="revolute">',
