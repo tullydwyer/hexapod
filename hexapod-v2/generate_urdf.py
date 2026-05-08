@@ -164,6 +164,22 @@ COXA_HIP_AXIS = np.array([3.0, 1.0, 35.0])
 FEMUR_PROX_AXIS = np.array([0.0, 0.0, 35.0])
 TIBIA_PROX_AXIS = np.array([51.757, 0.0, 8.787])
 
+COXA_SOURCE_FILES = {
+    "left": HERE / "coxa-996-left.stl",
+    "right": HERE / "coxa-996-right.stl",
+}
+
+# The right coxa STL is exported in the assembly frame; rotate and translate it
+# into the mirrored local coxa frame before applying the hip-axis alignment.
+COXA_RIGHT_SOURCE_ROTATION = np.array(
+    [
+        [-1.0, 0.0, 0.0],
+        [0.0, 0.0, -1.0],
+        [0.0, -1.0, 0.0],
+    ]
+)
+COXA_RIGHT_SOURCE_OFFSET_MM = np.array([175.358, 7.0, 131.285])
+
 # MG996R shoulder tab-hole centers in coxa.step, in source CAD XZ.
 COXA_SHOULDER_MOUNT_HOLES_STEP_XZ_MM = np.array(
     [
@@ -271,6 +287,10 @@ SHOULDER_SERVO_SLIDE_MM = {
 KNEE_SERVO_SLIDE_MM = {
     "left": np.array([0.0, 29.0, 0.0]),
     "right": np.array([0.0, -29.0, 0.0]),
+}
+TIBIA_SLIDE_MM = {
+    "left": np.array([0.0, 0.0, 0.0]),
+    "right": np.array([0.0, 0.0, 0.0]),
 }
 FEMUR_SHOULDER_INSET_MM = {
     "left": np.array([0.0, -9.0, 0.0]),
@@ -404,6 +424,32 @@ def feature_aligned_mesh(
     write_mesh(target, mesh)
 
 
+def coxa_source_mesh(side: str) -> trimesh.Trimesh:
+    if side == "right":
+        return transformed_mesh(
+            COXA_SOURCE_FILES[side],
+            rotation=COXA_RIGHT_SOURCE_ROTATION,
+            offset=COXA_RIGHT_SOURCE_OFFSET_MM,
+        )
+    return transformed_mesh(COXA_SOURCE_FILES[side])
+
+
+def write_aligned_mesh(
+    target: str,
+    mesh: trimesh.Trimesh,
+    rotation: np.ndarray,
+    pivot: np.ndarray,
+    extra_offset: np.ndarray | None = None,
+) -> None:
+    vertices = (rotation @ (np.asarray(mesh.vertices) - pivot).T).T
+    if extra_offset is not None:
+        vertices = vertices + extra_offset
+    mesh.vertices = vertices
+    if np.linalg.det(rotation) < 0:
+        mesh.invert()
+    write_mesh(target, mesh)
+
+
 def centred_mesh(source: Path, target: str, rotation: np.ndarray | None = None) -> None:
     mesh = transformed_mesh(source, rotation=rotation)
     _, _, centre, _ = bounds(mesh)
@@ -449,17 +495,17 @@ def build_meshes() -> None:
     offset_mesh(STEP_DIR / "bottom-cover-flat.step", "bottom-cover-flat.stl", offset=-top_centre)
 
     coxa_visual_offset = np.array([0.0, 0.0, COXA_VISUAL_RISE_MM])
-    feature_aligned_mesh(
-        STEP_DIR / "coxa.step",
+    write_aligned_mesh(
         "coxa-left.stl",
+        coxa_source_mesh("left"),
         np.eye(3),
         COXA_HIP_AXIS,
         extra_offset=coxa_visual_offset,
     )
-    feature_aligned_mesh(
-        STEP_DIR / "coxa.step",
+    write_aligned_mesh(
         "coxa-right.stl",
-        np.diag([1.0, -1.0, 1.0]),
+        coxa_source_mesh("right"),
+        np.eye(3),
         np.array([COXA_HIP_AXIS[0], -COXA_HIP_AXIS[1], COXA_HIP_AXIS[2]]),
         extra_offset=coxa_visual_offset,
     )
@@ -480,12 +526,14 @@ def build_meshes() -> None:
         "tibia-right.stl",
         TIBIA_TO_SERVO_ROTATIONS["right"],
         tibia_mount_pivot("right"),
+        extra_offset=TIBIA_SLIDE_MM["right"],
     )
     feature_aligned_mesh(
         STEP_DIR / "tibia.step",
         "tibia-left.stl",
         TIBIA_TO_SERVO_ROTATIONS["left"],
         tibia_mount_pivot("left"),
+        extra_offset=TIBIA_SLIDE_MM["left"],
     )
 
     # Hip servos are yaw servos: shaft exits downward through the frame pocket.
