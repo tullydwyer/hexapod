@@ -284,6 +284,10 @@ SHOULDER_SERVO_SLIDE_MM = {
     "left": np.array([0.0, 20.314, 0.0]),
     "right": np.array([0.0, -20.314, 0.0]),
 }
+SHOULDER_MOUNT_OFFSET_MM = {
+    "left": np.array([0.0, 0.0, 1.58]),
+    "right": np.array([0.0, 0.0, 1.58]),
+}
 KNEE_SERVO_SLIDE_MM = {
     "left": np.array([0.0, 29.0, 0.0]),
     "right": np.array([0.0, -29.0, 0.0]),
@@ -343,7 +347,8 @@ def shoulder_mount_origin(side: str) -> tuple[float, float, float]:
         coxa_holes,
         rotated_servo_mount_holes_xz(SHOULDER_SERVO_ROTATIONS[side]),
     )
-    return (origin_xz[0] * 0.001, 0.0, origin_xz[1] * 0.001)
+    origin = np.array([origin_xz[0], 0.0, origin_xz[1]]) + SHOULDER_MOUNT_OFFSET_MM[side]
+    return tuple((origin * 0.001).tolist())
 
 
 def femur_shoulder_origin(side: str) -> tuple[float, float, float]:

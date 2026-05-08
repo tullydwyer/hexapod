@@ -198,13 +198,13 @@
   <joint name="l1_shoulder_servo_joint" type="fixed">
     <parent link="l1_coxa"/>
     <child link="l1_shoulder_servo"/>
-    <origin xyz="0.043008 0.000000 0.000420" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.043008 0.000000 0.002000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <joint name="l1_shoulder" type="revolute">
     <parent link="l1_coxa"/>
     <child link="l1_femur"/>
-    <origin xyz="0.043008 -0.009000 0.000420" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.043008 -0.009000 0.002000" rpy="0.000000 0.000000 0.000000"/>
     <axis xyz="0 1 0"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
@@ -383,13 +383,13 @@
   <joint name="l2_shoulder_servo_joint" type="fixed">
     <parent link="l2_coxa"/>
     <child link="l2_shoulder_servo"/>
-    <origin xyz="0.043008 0.000000 0.000420" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.043008 0.000000 0.002000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <joint name="l2_shoulder" type="revolute">
     <parent link="l2_coxa"/>
     <child link="l2_femur"/>
-    <origin xyz="0.043008 -0.009000 0.000420" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.043008 -0.009000 0.002000" rpy="0.000000 0.000000 0.000000"/>
     <axis xyz="0 1 0"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
@@ -568,13 +568,13 @@
   <joint name="l3_shoulder_servo_joint" type="fixed">
     <parent link="l3_coxa"/>
     <child link="l3_shoulder_servo"/>
-    <origin xyz="0.043008 0.000000 0.000420" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.043008 0.000000 0.002000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <joint name="l3_shoulder" type="revolute">
     <parent link="l3_coxa"/>
     <child link="l3_femur"/>
-    <origin xyz="0.043008 -0.009000 0.000420" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.043008 -0.009000 0.002000" rpy="0.000000 0.000000 0.000000"/>
     <axis xyz="0 1 0"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
@@ -753,13 +753,13 @@
   <joint name="r1_shoulder_servo_joint" type="fixed">
     <parent link="r1_coxa"/>
     <child link="r1_shoulder_servo"/>
-    <origin xyz="0.042992 0.000000 0.000420" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.042992 0.000000 0.002000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <joint name="r1_shoulder" type="revolute">
     <parent link="r1_coxa"/>
     <child link="r1_femur"/>
-    <origin xyz="0.042992 0.009000 0.000420" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.042992 0.009000 0.002000" rpy="0.000000 0.000000 0.000000"/>
     <axis xyz="0 1 0"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
@@ -938,13 +938,13 @@
   <joint name="r2_shoulder_servo_joint" type="fixed">
     <parent link="r2_coxa"/>
     <child link="r2_shoulder_servo"/>
-    <origin xyz="0.042992 0.000000 0.000420" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.042992 0.000000 0.002000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <joint name="r2_shoulder" type="revolute">
     <parent link="r2_coxa"/>
     <child link="r2_femur"/>
-    <origin xyz="0.042992 0.009000 0.000420" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.042992 0.009000 0.002000" rpy="0.000000 0.000000 0.000000"/>
     <axis xyz="0 1 0"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
@@ -1123,13 +1123,13 @@
   <joint name="r3_shoulder_servo_joint" type="fixed">
     <parent link="r3_coxa"/>
     <child link="r3_shoulder_servo"/>
-    <origin xyz="0.042992 0.000000 0.000420" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.042992 0.000000 0.002000" rpy="0.000000 0.000000 0.000000"/>
   </joint>
 
   <joint name="r3_shoulder" type="revolute">
     <parent link="r3_coxa"/>
     <child link="r3_femur"/>
-    <origin xyz="0.042992 0.009000 0.000420" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.042992 0.009000 0.002000" rpy="0.000000 0.000000 0.000000"/>
     <axis xyz="0 1 0"/>
     <limit lower="-1.5708" upper="1.5708" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
