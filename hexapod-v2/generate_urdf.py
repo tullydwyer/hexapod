@@ -266,7 +266,10 @@ SHOULDER_SERVO_SLIDE_MM = {
     "left": np.array([0.0, 20.314, 0.0]),
     "right": np.array([0.0, -20.314, 0.0]),
 }
-FEMUR_SHOULDER_INSET_MM = np.array([0.0, 9.0, 0.0])
+FEMUR_SHOULDER_INSET_MM = {
+    "left": np.array([0.0, -9.0, 0.0]),
+    "right": np.array([0.0, 9.0, 0.0]),
+}
 
 
 def tibia_to_servo_base_rotation() -> np.ndarray:
@@ -318,7 +321,7 @@ def shoulder_mount_origin(side: str) -> tuple[float, float, float]:
 
 
 def femur_shoulder_origin(side: str) -> tuple[float, float, float]:
-    origin = np.array(shoulder_mount_origin(side)) + FEMUR_SHOULDER_INSET_MM * 0.001
+    origin = np.array(shoulder_mount_origin(side)) + FEMUR_SHOULDER_INSET_MM[side] * 0.001
     return tuple(origin.tolist())
 
 
