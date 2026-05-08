@@ -29,12 +29,13 @@ import trimesh
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 STEP_DIR = ROOT / "STEP"
+CHIPO_DIR = ROOT / "Chipo"
 MESH_DIR = HERE / "meshes"
 
 
-# Physical dimensions from chica-config-2040.txt.
+# Physical dimensions from chica/chipo config files.
 COXA_LEN = 0.043
-FEMUR_LEN = 0.080
+FEMUR_LEN = 0.060
 TIBIA_LEN = 0.134
 
 
@@ -160,7 +161,7 @@ LEGS = [
 # Feature centers recovered from circular horn geometry in the STEP meshes.
 # These are millimetres in the source CAD coordinate frames.
 COXA_HIP_AXIS = np.array([3.0, 1.0, 35.0])
-FEMUR_PROX_AXIS = np.array([3.0, 1.0, 35.0])
+FEMUR_PROX_AXIS = np.array([0.0, 0.0, 35.0])
 TIBIA_PROX_AXIS = np.array([51.757, 0.0, 8.787])
 
 # MG996R shoulder tab-hole centers in coxa.step, in source CAD XZ.
@@ -434,12 +435,12 @@ def build_meshes() -> None:
     )
 
     femur_to_link = rot_x(-math.pi / 2)
-    feature_aligned_mesh(STEP_DIR / "femur.step", "femur-right.stl", femur_to_link, FEMUR_PROX_AXIS)
+    feature_aligned_mesh(CHIPO_DIR / "femur-996.stl", "femur-right.stl", femur_to_link, FEMUR_PROX_AXIS)
     feature_aligned_mesh(
-        STEP_DIR / "femur.step",
+        CHIPO_DIR / "femur-996.stl",
         "femur-left.stl",
         femur_to_link @ np.diag([1.0, 1.0, -1.0]),
-        np.array([FEMUR_PROX_AXIS[0], FEMUR_PROX_AXIS[1], -FEMUR_PROX_AXIS[2]]),
+        FEMUR_PROX_AXIS,
     )
 
     # Align the tibia knee-end MG996R tab holes to the knee servo while keeping

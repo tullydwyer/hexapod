@@ -110,8 +110,8 @@
       <inertial>
         <mass value="0.06"/>
         <inertia ixx="0.00002000" ixy="0" ixz="0"
-                 iyy="0.00005000" iyz="0"
-                 izz="0.00003400"/>
+                 iyy="0.00003600" iyz="0"
+                 izz="0.00002000"/>
       </inertial>
       <visual>
         <geometry>
@@ -213,7 +213,7 @@
   <joint name="l1_knee" type="revolute">
     <parent link="l1_femur"/>
     <child link="l1_knee_servo"/>
-    <origin xyz="0.080000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.060000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
     <axis xyz="0 1 0"/>
     <limit lower="-2.0944" upper="0.5236" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
@@ -295,8 +295,8 @@
       <inertial>
         <mass value="0.06"/>
         <inertia ixx="0.00002000" ixy="0" ixz="0"
-                 iyy="0.00005000" iyz="0"
-                 izz="0.00003400"/>
+                 iyy="0.00003600" iyz="0"
+                 izz="0.00002000"/>
       </inertial>
       <visual>
         <geometry>
@@ -398,7 +398,7 @@
   <joint name="l2_knee" type="revolute">
     <parent link="l2_femur"/>
     <child link="l2_knee_servo"/>
-    <origin xyz="0.080000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.060000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
     <axis xyz="0 1 0"/>
     <limit lower="-2.0944" upper="0.5236" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
@@ -480,8 +480,8 @@
       <inertial>
         <mass value="0.06"/>
         <inertia ixx="0.00002000" ixy="0" ixz="0"
-                 iyy="0.00005000" iyz="0"
-                 izz="0.00003400"/>
+                 iyy="0.00003600" iyz="0"
+                 izz="0.00002000"/>
       </inertial>
       <visual>
         <geometry>
@@ -583,7 +583,7 @@
   <joint name="l3_knee" type="revolute">
     <parent link="l3_femur"/>
     <child link="l3_knee_servo"/>
-    <origin xyz="0.080000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.060000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
     <axis xyz="0 1 0"/>
     <limit lower="-2.0944" upper="0.5236" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
@@ -665,8 +665,8 @@
       <inertial>
         <mass value="0.06"/>
         <inertia ixx="0.00002000" ixy="0" ixz="0"
-                 iyy="0.00005000" iyz="0"
-                 izz="0.00003400"/>
+                 iyy="0.00003600" iyz="0"
+                 izz="0.00002000"/>
       </inertial>
       <visual>
         <geometry>
@@ -768,7 +768,7 @@
   <joint name="r1_knee" type="revolute">
     <parent link="r1_femur"/>
     <child link="r1_knee_servo"/>
-    <origin xyz="0.080000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.060000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
     <axis xyz="0 1 0"/>
     <limit lower="-2.0944" upper="0.5236" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
@@ -850,8 +850,8 @@
       <inertial>
         <mass value="0.06"/>
         <inertia ixx="0.00002000" ixy="0" ixz="0"
-                 iyy="0.00005000" iyz="0"
-                 izz="0.00003400"/>
+                 iyy="0.00003600" iyz="0"
+                 izz="0.00002000"/>
       </inertial>
       <visual>
         <geometry>
@@ -953,7 +953,7 @@
   <joint name="r2_knee" type="revolute">
     <parent link="r2_femur"/>
     <child link="r2_knee_servo"/>
-    <origin xyz="0.080000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.060000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
     <axis xyz="0 1 0"/>
     <limit lower="-2.0944" upper="0.5236" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
@@ -1035,8 +1035,8 @@
       <inertial>
         <mass value="0.06"/>
         <inertia ixx="0.00002000" ixy="0" ixz="0"
-                 iyy="0.00005000" iyz="0"
-                 izz="0.00003400"/>
+                 iyy="0.00003600" iyz="0"
+                 izz="0.00002000"/>
       </inertial>
       <visual>
         <geometry>
@@ -1138,7 +1138,7 @@
   <joint name="r3_knee" type="revolute">
     <parent link="r3_femur"/>
     <child link="r3_knee_servo"/>
-    <origin xyz="0.080000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
+    <origin xyz="0.060000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000"/>
     <axis xyz="0 1 0"/>
     <limit lower="-2.0944" upper="0.5236" effort="2.0" velocity="6.28"/>
     <dynamics damping="0.01" friction="0.05"/>
