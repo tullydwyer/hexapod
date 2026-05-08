@@ -268,6 +268,10 @@ SHOULDER_SERVO_SLIDE_MM = {
     "left": np.array([0.0, 20.314, 0.0]),
     "right": np.array([0.0, -20.314, 0.0]),
 }
+KNEE_SERVO_SLIDE_MM = {
+    "left": np.array([0.0, 29.0, 0.0]),
+    "right": np.array([0.0, -29.0, 0.0]),
+}
 FEMUR_SHOULDER_INSET_MM = {
     "left": np.array([0.0, -9.0, 0.0]),
     "right": np.array([0.0, 9.0, 0.0]),
@@ -507,10 +511,12 @@ def build_meshes() -> None:
     servo_mesh(
         "servo-knee-right.stl",
         KNEE_SERVO_ROTATIONS["right"],
+        extra_offset=KNEE_SERVO_SLIDE_MM["right"],
     )
     servo_mesh(
         "servo-knee-left.stl",
         KNEE_SERVO_ROTATIONS["left"],
+        extra_offset=KNEE_SERVO_SLIDE_MM["left"],
     )
 
 
