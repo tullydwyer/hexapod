@@ -39,6 +39,7 @@ TIBIA_LEN = 0.134
 
 
 BODY_Z = -0.008
+HIP_SERVO_VISUAL_DROP_MM = 10.0
 
 
 # Servo shaft location in hexapod-v2/servo-MG996R.stl, millimetres.
@@ -339,7 +340,11 @@ def build_meshes() -> None:
 
     # Hip servos are yaw servos: shaft exits downward through the frame pocket.
     # Rx(π) flips the body upward so it sits inside the frame, shaft pointing down.
-    servo_mesh("servo-hip-shaft.stl", rot_x(math.pi))
+    servo_mesh(
+        "servo-hip-shaft.stl",
+        rot_x(math.pi),
+        extra_offset=np.array([0.0, 0.0, -HIP_SERVO_VISUAL_DROP_MM]),
+    )
 
     # Limb servos: native shaft +Z becomes joint +Y/-Y, and native body length X
     # becomes vertical Z.  This matches the tall printed coxa/femur servo pockets.
