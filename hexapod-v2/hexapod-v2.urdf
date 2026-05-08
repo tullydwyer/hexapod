@@ -95,13 +95,13 @@
       </inertial>
       <visual>
         <geometry>
-          <mesh filename="./meshes/servo-shoulder-z180-left.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-shoulder-z180-slid-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="grey"/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="./meshes/servo-shoulder-z180-left.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-shoulder-z180-slid-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -280,13 +280,13 @@
       </inertial>
       <visual>
         <geometry>
-          <mesh filename="./meshes/servo-shoulder-z180-left.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-shoulder-z180-slid-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="grey"/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="./meshes/servo-shoulder-z180-left.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-shoulder-z180-slid-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -465,13 +465,13 @@
       </inertial>
       <visual>
         <geometry>
-          <mesh filename="./meshes/servo-shoulder-z180-left.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-shoulder-z180-slid-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="grey"/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="./meshes/servo-shoulder-z180-left.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-shoulder-z180-slid-left.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -650,13 +650,13 @@
       </inertial>
       <visual>
         <geometry>
-          <mesh filename="./meshes/servo-shoulder-z180-right.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-shoulder-z180-slid-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="grey"/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="./meshes/servo-shoulder-z180-right.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-shoulder-z180-slid-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -835,13 +835,13 @@
       </inertial>
       <visual>
         <geometry>
-          <mesh filename="./meshes/servo-shoulder-z180-right.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-shoulder-z180-slid-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="grey"/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="./meshes/servo-shoulder-z180-right.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-shoulder-z180-slid-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>
@@ -1020,13 +1020,13 @@
       </inertial>
       <visual>
         <geometry>
-          <mesh filename="./meshes/servo-shoulder-z180-right.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-shoulder-z180-slid-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="grey"/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="./meshes/servo-shoulder-z180-right.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="./meshes/servo-shoulder-z180-slid-right.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
   </link>

@@ -262,6 +262,10 @@ SHOULDER_SERVO_ROTATIONS = {
     side: rot_z(math.pi) @ rotation
     for side, rotation in LIMB_SERVO_ROTATIONS.items()
 }
+SHOULDER_SERVO_SLIDE_MM = {
+    "left": np.array([0.0, 20.314, 0.0]),
+    "right": np.array([0.0, -20.314, 0.0]),
+}
 
 
 def tibia_to_servo_base_rotation() -> np.ndarray:
@@ -480,12 +484,14 @@ def build_meshes() -> None:
     servo_mesh("servo-limb-right.stl", LIMB_SERVO_ROTATIONS["right"])
     servo_mesh("servo-limb-left.stl", LIMB_SERVO_ROTATIONS["left"])
     servo_mesh(
-        "servo-shoulder-z180-right.stl",
+        "servo-shoulder-z180-slid-right.stl",
         SHOULDER_SERVO_ROTATIONS["right"],
+        extra_offset=SHOULDER_SERVO_SLIDE_MM["right"],
     )
     servo_mesh(
-        "servo-shoulder-z180-left.stl",
+        "servo-shoulder-z180-slid-left.stl",
         SHOULDER_SERVO_ROTATIONS["left"],
+        extra_offset=SHOULDER_SERVO_SLIDE_MM["left"],
     )
     servo_mesh(
         "servo-knee-right.stl",
@@ -574,7 +580,7 @@ def generate_urdf() -> Path:
         coxa_mesh = f"coxa-{side}.stl"
         femur_mesh = f"femur-{side}.stl"
         tibia_mesh = f"tibia-{side}.stl"
-        shoulder_servo = f"servo-shoulder-z180-{side}.stl"
+        shoulder_servo = f"servo-shoulder-z180-slid-{side}.stl"
         knee_servo = f"servo-knee-{side}.stl"
         shoulder_xyz = shoulder_mount_origin(side)
         knee_xyz = (FEMUR_LEN, 0.0, 0.0)
