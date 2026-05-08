@@ -252,6 +252,17 @@ LIMB_SERVO_ROTATIONS = {
     ),
 }
 
+# Knee servos use the same X/Z mounting-hole alignment as the coxa shoulder
+# servos, but face the opposite side of the femur mount.
+KNEE_SERVO_ROTATIONS = {
+    side: rot_z(math.pi) @ rotation
+    for side, rotation in LIMB_SERVO_ROTATIONS.items()
+}
+SHOULDER_SERVO_ROTATIONS = {
+    side: rot_x(math.pi) @ rotation
+    for side, rotation in LIMB_SERVO_ROTATIONS.items()
+}
+
 
 def tibia_to_servo_base_rotation() -> np.ndarray:
     long_axis = TIBIA_KNEE_MOUNT_HOLES_STEP_XZ_MM[2] - TIBIA_KNEE_MOUNT_HOLES_STEP_XZ_MM[0]
@@ -296,7 +307,7 @@ def shoulder_mount_origin(side: str) -> tuple[float, float, float]:
     coxa_holes[:, 1] += COXA_VISUAL_RISE_MM
     origin_xz = servo_mount_origin_2d(
         coxa_holes,
-        rotated_servo_mount_holes_xz(LIMB_SERVO_ROTATIONS[side]),
+        rotated_servo_mount_holes_xz(SHOULDER_SERVO_ROTATIONS[side]),
     )
     return (origin_xz[0] * 0.001, 0.0, origin_xz[1] * 0.001)
 
@@ -305,7 +316,7 @@ def tibia_mount_pivot(side: str) -> np.ndarray:
     return mount_aligned_pivot(
         TIBIA_KNEE_MOUNT_HOLES_STEP_XZ_MM,
         TIBIA_TO_SERVO_ROTATIONS[side],
-        LIMB_SERVO_ROTATIONS[side],
+        KNEE_SERVO_ROTATIONS[side],
         TIBIA_PROX_AXIS,
     )
 
@@ -468,6 +479,22 @@ def build_meshes() -> None:
 
     servo_mesh("servo-limb-right.stl", LIMB_SERVO_ROTATIONS["right"])
     servo_mesh("servo-limb-left.stl", LIMB_SERVO_ROTATIONS["left"])
+    servo_mesh(
+        "servo-shoulder-rot180-right.stl",
+        SHOULDER_SERVO_ROTATIONS["right"],
+    )
+    servo_mesh(
+        "servo-shoulder-rot180-left.stl",
+        SHOULDER_SERVO_ROTATIONS["left"],
+    )
+    servo_mesh(
+        "servo-knee-right.stl",
+        KNEE_SERVO_ROTATIONS["right"],
+    )
+    servo_mesh(
+        "servo-knee-left.stl",
+        KNEE_SERVO_ROTATIONS["left"],
+    )
 
 
 def fmt_xyz(values: tuple[float, float, float] | np.ndarray) -> str:
@@ -547,14 +574,16 @@ def generate_urdf() -> Path:
         coxa_mesh = f"coxa-{side}.stl"
         femur_mesh = f"femur-{side}.stl"
         tibia_mesh = f"tibia-{side}.stl"
-        limb_servo = f"servo-limb-{side}.stl"
+        shoulder_servo = f"servo-shoulder-rot180-{side}.stl"
+        knee_servo = f"servo-knee-{side}.stl"
         shoulder_xyz = shoulder_mount_origin(side)
+        knee_xyz = (FEMUR_LEN, 0.0, 0.0)
 
         add_link(lines, f"{leg_name}_hip_servo", 0.055, (0.0542, 0.020, 0.0465), [mesh_block("servo-hip-shaft.stl")])
         add_link(lines, f"{leg_name}_coxa", 0.040, (COXA_LEN, 0.030, 0.060), [mesh_block(coxa_mesh)])
-        add_link(lines, f"{leg_name}_shoulder_servo", 0.055, (0.0542, 0.020, 0.0465), [mesh_block(limb_servo)])
+        add_link(lines, f"{leg_name}_shoulder_servo", 0.055, (0.0542, 0.020, 0.0465), [mesh_block(shoulder_servo)])
         add_link(lines, f"{leg_name}_femur", 0.060, (FEMUR_LEN, 0.020, 0.060), [mesh_block(femur_mesh)])
-        add_link(lines, f"{leg_name}_knee_servo", 0.055, (0.0542, 0.020, 0.0465), [mesh_block(limb_servo)])
+        add_link(lines, f"{leg_name}_knee_servo", 0.055, (0.0542, 0.020, 0.0465), [mesh_block(knee_servo)])
         add_link(lines, f"{leg_name}_tibia", 0.040, (TIBIA_LEN, 0.015, 0.015), [mesh_block(tibia_mesh)])
 
         lines += [
@@ -602,19 +631,19 @@ def generate_urdf() -> Path:
             '    <dynamics damping="0.01" friction="0.05"/>',
             "  </joint>",
             "",
-            f'  <joint name="{leg_name}_knee" type="revolute">',
+            f'  <joint name="{leg_name}_knee_servo_joint" type="fixed">',
             f'    <parent link="{leg_name}_femur"/>',
             f'    <child link="{leg_name}_knee_servo"/>',
-            f'    <origin xyz="{fmt_xyz((FEMUR_LEN, 0.0, 0.0))}" rpy="{fmt_rpy(0.0, 0.0, 0.0)}"/>',
+            f'    <origin xyz="{fmt_xyz(knee_xyz)}" rpy="{fmt_rpy(0.0, 0.0, 0.0)}"/>',
+            "  </joint>",
+            "",
+            f'  <joint name="{leg_name}_knee" type="revolute">',
+            f'    <parent link="{leg_name}_femur"/>',
+            f'    <child link="{leg_name}_tibia"/>',
+            f'    <origin xyz="{fmt_xyz(knee_xyz)}" rpy="{fmt_rpy(0.0, 0.0, 0.0)}"/>',
             '    <axis xyz="0 1 0"/>',
             '    <limit lower="-2.0944" upper="0.5236" effort="2.0" velocity="6.28"/>',
             '    <dynamics damping="0.01" friction="0.05"/>',
-            "  </joint>",
-            "",
-            f'  <joint name="{leg_name}_tibia_mount_joint" type="fixed">',
-            f'    <parent link="{leg_name}_knee_servo"/>',
-            f'    <child link="{leg_name}_tibia"/>',
-            f'    <origin xyz="{fmt_xyz((0.0, 0.0, 0.0))}" rpy="{fmt_rpy(0.0, 0.0, 0.0)}"/>',
             "  </joint>",
             "",
             f'  <joint name="{leg_name}_tip_joint" type="fixed">',
