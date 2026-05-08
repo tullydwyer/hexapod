@@ -279,8 +279,8 @@ def tibia_to_servo_base_rotation() -> np.ndarray:
 
 TIBIA_TO_SERVO_BASE_ROTATION = tibia_to_servo_base_rotation()
 TIBIA_TO_SERVO_ROTATIONS = {
-    "right": TIBIA_TO_SERVO_BASE_ROTATION,
-    "left": TIBIA_TO_SERVO_BASE_ROTATION @ np.diag([1.0, -1.0, 1.0]),
+    "right": rot_z(math.pi) @ TIBIA_TO_SERVO_BASE_ROTATION,
+    "left": rot_z(math.pi) @ TIBIA_TO_SERVO_BASE_ROTATION @ np.diag([1.0, -1.0, 1.0]),
 }
 
 
