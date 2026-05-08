@@ -279,8 +279,8 @@ def tibia_to_servo_base_rotation() -> np.ndarray:
 
 TIBIA_TO_SERVO_BASE_ROTATION = tibia_to_servo_base_rotation()
 TIBIA_TO_SERVO_ROTATIONS = {
-    "right": TIBIA_TO_SERVO_BASE_ROTATION @ np.diag([1.0, -1.0, 1.0]),
-    "left": TIBIA_TO_SERVO_BASE_ROTATION,
+    "right": TIBIA_TO_SERVO_BASE_ROTATION,
+    "left": TIBIA_TO_SERVO_BASE_ROTATION @ np.diag([1.0, -1.0, 1.0]),
 }
 
 
@@ -594,6 +594,7 @@ def generate_urdf() -> Path:
         shoulder_servo_xyz = shoulder_mount_origin(side)
         shoulder_xyz = femur_shoulder_origin(side)
         knee_xyz = (FEMUR_LEN, 0.0, 0.0)
+        knee_servo_xyz = (0.0, 0.0, 0.0)
 
         add_link(lines, f"{leg_name}_hip_servo", 0.055, (0.0542, 0.020, 0.0465), [mesh_block("servo-hip-shaft.stl")])
         add_link(lines, f"{leg_name}_coxa", 0.040, (COXA_LEN, 0.030, 0.060), [mesh_block(coxa_mesh)])
@@ -648,9 +649,9 @@ def generate_urdf() -> Path:
             "  </joint>",
             "",
             f'  <joint name="{leg_name}_knee_servo_joint" type="fixed">',
-            f'    <parent link="{leg_name}_femur"/>',
+            f'    <parent link="{leg_name}_tibia"/>',
             f'    <child link="{leg_name}_knee_servo"/>',
-            f'    <origin xyz="{fmt_xyz(knee_xyz)}" rpy="{fmt_rpy(0.0, 0.0, 0.0)}"/>',
+            f'    <origin xyz="{fmt_xyz(knee_servo_xyz)}" rpy="{fmt_rpy(0.0, 0.0, 0.0)}"/>',
             "  </joint>",
             "",
             f'  <joint name="{leg_name}_knee" type="revolute">',
